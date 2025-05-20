@@ -1,0 +1,4016 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EMOFUSION - Emotional Intelligence Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+      :root {
+        --light-bg: linear-gradient(135deg, #000000 0%, #121212 100%);
+        --dark-bg: linear-gradient(135deg, #000000 0%, #121212 100%);
+        --light-dots: url('data:image/svg+xml,%3Csvg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"%3E%3Cdefs%3E%3Cpattern id="dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"%3E%3Ccircle cx="10" cy="10" r="1" fill="rgba(99,102,241,0.4)"%3E%3C/circle%3E%3C/pattern%3E%3C/defs%3E%3Crect x="0" y="0" width="100%" height="100%" fill="url(%23dots)"%3E%3C/rect%3E%3C/svg%3E');
+        --dark-dots: url('data:image/svg+xml,%3Csvg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"%3E%3Cdefs%3E%3Cpattern id="dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"%3E%3Ccircle cx="10" cy="10" r="1" fill="rgba(199,210,254,0.4)"%3E%3C/circle%3E%3C/pattern%3E%3C/defs%3E%3Crect x="0" y="0" width="100%" height="100%" fill="url(%23dots)"%3E%3C/rect%3E%3C/svg%3E');
+      }
+
+      body,
+      html {
+        height: 100vh;
+        margin: 0;
+        overflow-x: hidden;
+        background: var(--dark-bg);
+        background-image: var(--dark-dots);
+        transition: background 0.3s ease, background-image 0.3s ease;
+        color: #ffffff;
+      }
+
+      body.dark-mode {
+        background: var(--dark-bg);
+        background-image: var(--dark-dots);
+        color: #ffffff;
+      }
+
+      /* Sparkle animation */
+      @keyframes sparkle {
+        0%,
+        100% {
+          opacity: 0;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      .sparkle {
+        position: absolute;
+        width: 3px;
+        height: 3px;
+        border-radius: 50%;
+        background-color: #ffffff;
+        pointer-events: none;
+        z-index: -1;
+      }
+
+      .header-container {
+        padding: 1rem 0;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        z-index: 10;
+      }
+
+      .container {
+        padding-top: 0 !important;
+      }
+
+      .emotion-color {
+        transition: color 0.3s ease;
+      }
+      .emotion-angry {
+        color: rgb(255, 0, 0) !important;
+      }
+      .emotion-disgust {
+        color: rgb(75, 0, 130) !important;
+      }
+      .emotion-sad {
+        color: rgb(27, 79, 211) !important;
+      }
+      .emotion-neutral {
+        color: rgb(0, 255, 0) !important;
+      }
+      .emotion-fear {
+        color: rgb(235, 203, 75) !important;
+      }
+      .emotion-surprise {
+        color: rgb(255, 127, 0) !important;
+      }
+      .emotion-happy {
+        color: rgb(202, 62, 130) !important;
+      }
+      .emotion-unknown {
+        color: rgb(255, 255, 255) !important;
+      }
+      .emotion-detecting {
+        color: rgb(255, 255, 255) !important;
+      }
+
+      .glass-panel {
+        background: rgba(0, 0, 0, 0.6);
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 1rem;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+        padding: 1.5rem !important;
+        width: 100%;
+        max-width: 480px;
+        margin: 0 auto;
+        transition: background 0.3s ease, border-color 0.3s ease;
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+      }
+
+      body.dark-mode .glass-panel {
+        background: rgba(0, 0, 0, 0.6);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+
+      @supports not (backdrop-filter: blur(12px)) {
+        .glass-panel {
+          background: rgba(0, 0, 0, 0.7);
+        }
+        body.dark-mode .glass-panel {
+          background: rgba(0, 0, 0, 0.7);
+        }
+      }
+
+      .container.mx-auto {
+        padding: 1rem 1.5rem;
+        height: 100vh;
+        max-height: 100vh;
+        overflow: hidden;
+        max-width: 1280px;
+        margin: 0 auto;
+      }
+
+      .main-content {
+        height: calc(100vh - 160px);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        max-width: 1280px;
+        margin: 0 auto;
+        width: 100%;
+      }
+
+      .left-column {
+        display: flex;
+        flex-direction: column;
+        height: calc(100% - 2rem);
+        padding-bottom: 1rem;
+      }
+
+      .video-container {
+        height: 245px;
+        width: 340px;
+        margin: 0 auto;
+        border: 4px solid rgb(139, 92, 246);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+        flex-shrink: 0;
+      }
+
+      body.dark-mode .video-container {
+        border-color: rgb(139, 92, 246);
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+      }
+
+      .controls-section {
+        width: 100%;
+        padding: 0.5rem 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .status-emotion-container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        margin-top: 0.5rem;
+        max-height: 25%;
+        min-height: fit-content;
+      }
+
+      #progressContainer {
+        height: 2.5rem;
+        margin-bottom: 0.5rem;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      #progressContainer.visible {
+        opacity: 1;
+      }
+
+      #currentEmotionContainer {
+        width: 100%;
+        padding: 0.75rem;
+        border-radius: 0.375rem;
+        background: rgba(139, 92, 246, 0.2);
+        border: 1px solid rgba(139, 92, 246, 0.4);
+        overflow: hidden;
+        transition: background 0.3s ease, border-color 0.3s ease;
+      }
+
+      body.dark-mode #currentEmotionContainer {
+        background: rgba(139, 92, 246, 0.2);
+        border-color: rgba(139, 92, 246, 0.4);
+      }
+
+      #currentEmotion {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: rgb(255, 255, 255);
+        word-break: break-word;
+        line-height: 1.1;
+        max-width: 100%;
+        overflow-wrap: break-word;
+      }
+
+      body.dark-mode #currentEmotion {
+        color: rgb(255, 255, 255);
+      }
+
+      #currentEmotionContainer .fas.fa-brain {
+        font-size: 1.125rem;
+      }
+
+      #currentEmotionContainer .text-violet-800 {
+        font-size: 0.813rem;
+        margin-bottom: 0.25rem;
+        padding: 0.5rem;
+        color: rgb(255, 255, 255) !important;
+      }
+
+      body.dark-mode #currentEmotionContainer .text-violet-800 {
+        color: rgb(255, 255, 255) !important;
+      }
+
+      .emotion-icon-container {
+        flex-shrink: 0;
+        width: 1.5rem;
+      }
+
+      .emotion-content {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        min-height: 2.25rem;
+      }
+
+      .emotion-text-container {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .progress-bar {
+        height: 4px;
+        background: rgba(189, 117, 223, 0.71);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+
+      .progress-bar-fill {
+        height: 100%;
+        background: rgb(139, 92, 246);
+        transition: width 0.3s ease;
+        width: 0%;
+      }
+
+      body.dark-mode .progress-bar {
+        background: rgba(139, 92, 246, 0.3);
+      }
+
+      body.dark-mode .progress-bar-fill {
+        background: rgb(139, 92, 246);
+      }
+
+      #chatContainer {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(139, 92, 246, 0.5) rgba(139, 92, 246, 0.1);
+        height: calc(100% - 4rem);
+        width: 100%;
+        overflow-y: auto;
+        padding-right: 0.5rem;
+        display: flex;
+        flex-direction: column-reverse;
+        gap: 1rem;
+        max-width: 480px;
+        margin: 0 auto;
+        scroll-behavior: smooth;
+      }
+
+      #chatContainer::-webkit-scrollbar {
+        width: 6px;
+        height: calc(100% - 3.5rem);
+        visibility: visible;
+      }
+
+      #chatContainer::-webkit-scrollbar-track {
+        background: rgba(139, 92, 246, 0.1);
+        border-radius: 3px;
+      }
+
+      #chatContainer::-webkit-scrollbar-thumb {
+        background: rgba(139, 92, 246, 0.5);
+        border-radius: 3px;
+      }
+
+      #chatContainer::-webkit-scrollbar-thumb:hover {
+        background: rgba(139, 92, 246, 0.7);
+      }
+
+      body.dark-mode #chatContainer::-webkit-scrollbar-track {
+        background: rgba(139, 92, 246, 0.1);
+      }
+
+      body.dark-mode #chatContainer::-webkit-scrollbar-thumb {
+        background: rgba(139, 92, 246, 0.5);
+      }
+
+      body.dark-mode #chatContainer::-webkit-scrollbar-thumb:hover {
+        background: rgba(139, 92, 246, 0.7);
+      }
+
+      .recording-animation {
+        animation: pulse 1.5s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      .chat-message {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeIn 0.5s ease forwards;
+      }
+
+      .chat-message.user-message {
+        margin-left: auto;
+        margin-right: 0;
+      }
+
+      .chat-message.user-message .flex {
+        flex-direction: row-reverse;
+      }
+
+      .chat-message {
+        max-width: 80%;
+      }
+
+      .chat-message.assistant-message {
+        margin-right: auto;
+        margin-left: 0;
+      }
+
+      #chatContainer .chat-message:not(:last-child) {
+        margin-top: 1rem;
+      }
+
+      @keyframes fadeIn {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 1024px) {
+        .main-content {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+
+        .glass-panel,
+        .video-container,
+        #chatContainer {
+          max-width: 100%;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .container.mx-auto {
+          padding: 0.5rem;
+        }
+
+        .glass-panel {
+          padding: 1rem !important;
+        }
+      }
+
+      .chat-emotion-text {
+        font-weight: 600;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-content {
+        background: linear-gradient(
+          135deg,
+          rgba(0, 0, 0, 0.8),
+          rgba(0, 0, 0, 0.7)
+        );
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(139, 92, 246, 0.3);
+        border-radius: 1rem;
+        padding: 2rem;
+        width: 90%;
+        max-width: 800px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
+        position: relative;
+        transition: background 0.3s ease, border-color 0.3s ease,
+          box-shadow 0.3s ease;
+      }
+
+      body.dark-mode .modal-content {
+        background: linear-gradient(
+          135deg,
+          rgba(0, 0, 0, 0.8),
+          rgba(0, 0, 0, 0.7)
+        );
+        border-color: rgba(139, 92, 246, 0.3);
+        box-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
+      }
+
+      @supports not (backdrop-filter: blur(12px)) {
+        .modal-content {
+          background: linear-gradient(
+            135deg,
+            rgba(0, 0, 0, 0.9),
+            rgba(0, 0, 0, 0.8)
+          );
+        }
+        body.dark-mode .modal-content {
+          background: linear-gradient(
+            135deg,
+            rgba(0, 0, 0, 0.9),
+            rgba(0, 0, 0, 0.8)
+          );
+        }
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        color: #fff;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: color 0.3s ease;
+      }
+
+      .modal-close:hover {
+        color: #e879f9;
+      }
+
+      .chart-container {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 0.75rem;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        transition: background 0.3s ease;
+        border: 1px solid rgba(139, 92, 246, 0.2);
+      }
+
+      body.dark-mode .chart-container {
+        background: rgba(0, 0, 0, 0.3);
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+
+      .stat-card {
+        background: rgba(139, 92, 246, 0.2);
+        border-radius: 0.75rem;
+        padding: 1rem;
+        text-align: center;
+        transition: background 0.3s ease;
+        border: 1px solid rgba(139, 92, 246, 0.3);
+      }
+
+      body.dark-mode .stat-card {
+        background: rgba(139, 92, 246, 0.2);
+      }
+
+      .stat-card h3 {
+        color: #e879f9;
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-card p {
+        color: #fff;
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+
+      .button {
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .button:hover {
+        transform: translateY(-2px);
+      }
+
+      .primary-button {
+        background: #8b5cf6;
+        color: #fff;
+        box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3);
+      }
+
+      .primary-button:hover {
+        background: #7c3aed;
+        box-shadow: 0 6px 15px rgba(139, 92, 246, 0.4);
+      }
+
+      .success-button {
+        background: #10b981;
+        color: #fff;
+        box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+      }
+
+      .success-button:hover {
+        background: #059669;
+        box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4);
+      }
+
+      body.dark-mode .primary-button {
+        background: #8b5cf6;
+      }
+
+      body.dark-mode .primary-button:hover {
+        background: #7c3aed;
+      }
+
+      body.dark-mode .success-button {
+        background: #059669;
+      }
+
+      body.dark-mode .success-button:hover {
+        background: #047857;
+      }
+
+      .text-input-container {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+      }
+      .text-input {
+        flex: 1;
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        border: 1px solid rgba(139, 92, 246, 0.3);
+        background: rgba(0, 0, 0, 0.3);
+        color: #ffffff;
+        font-size: 1rem;
+        transition: border-color 0.3s ease, background 0.3s ease,
+          color 0.3s ease, box-shadow 0.3s ease;
+      }
+      .text-input:focus {
+        outline: none;
+        border-color: #8b5cf6;
+        box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2),
+          0 0 15px rgba(139, 92, 246, 0.3);
+      }
+
+      body.dark-mode .text-input {
+        border-color: rgba(139, 92, 246, 0.3);
+        background: rgba(0, 0, 0, 0.3);
+        color: #ffffff;
+      }
+
+      body.dark-mode .text-input:focus {
+        border-color: #8b5cf6;
+        box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2),
+          0 0 15px rgba(139, 92, 246, 0.3);
+      }
+
+      .submit-button {
+        padding: 0.75rem 1.5rem;
+        background: #8b5cf6;
+        color: white;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        transition: background 0.3s ease, transform 0.2s ease,
+          box-shadow 0.3s ease;
+        box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3);
+      }
+      .submit-button:hover {
+        background: #7c3aed;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(139, 92, 246, 0.4);
+      }
+      .submit-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      body.dark-mode .submit-button {
+        background: #8b5cf6;
+      }
+      body.dark-mode .submit-button:hover {
+        background: #7c3aed;
+      }
+
+      /* Login Modal Styles */
+      #loginModal {
+        z-index: 1100;
+      }
+
+      .login-modal-content {
+        background: rgba(0, 0, 0, 0.8);
+        color: #fff;
+        border-radius: 1rem;
+        padding: 2rem;
+        width: 90%;
+        max-width: 400px;
+        box-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
+        border: 1px solid rgba(139, 92, 246, 0.3);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+
+      .login-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .form-group label {
+        font-size: 0.875rem;
+        color: #a78bfa;
+      }
+
+      .form-input {
+        padding: 0.75rem;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(139, 92, 246, 0.3);
+        border-radius: 0.5rem;
+        color: #fff;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .form-input:focus {
+        outline: none;
+        border-color: #8b5cf6;
+        box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2),
+          0 0 15px rgba(139, 92, 246, 0.3);
+      }
+
+      .login-button {
+        background: #8b5cf6;
+        color: #fff;
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease,
+          box-shadow 0.3s ease;
+        box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3);
+      }
+
+      .login-button:hover {
+        background: #7c3aed;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(139, 92, 246, 0.4);
+      }
+
+      .login-tabs {
+        display: flex;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+      }
+
+      .login-tab {
+        flex: 1;
+        text-align: center;
+        padding: 0.75rem;
+        cursor: pointer;
+        color: #a78bfa;
+        transition: color 0.3s ease, border-color 0.3s ease;
+        border-bottom: 2px solid transparent;
+      }
+
+      .login-tab.active {
+        color: #8b5cf6;
+        border-color: #8b5cf6;
+      }
+
+      /* Settings Panel */
+      #settingsPanel {
+        position: fixed;
+        top: 0;
+        right: -300px;
+        width: 300px;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.9);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        z-index: 1000;
+        transition: right 0.3s ease;
+        padding: 2rem 1rem;
+        border-left: 1px solid rgba(139, 92, 246, 0.3);
+        overflow-y: auto;
+        box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+      }
+
+      #settingsPanel.open {
+        right: 0;
+      }
+
+      .settings-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+      }
+
+      .settings-close {
+        color: #a78bfa;
+        cursor: pointer;
+        font-size: 1.5rem;
+        transition: color 0.3s ease;
+      }
+
+      .settings-close:hover {
+        color: #8b5cf6;
+      }
+
+      .settings-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .settings-group-title {
+        color: #a78bfa;
+        font-size: 0.875rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .settings-option {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .settings-option-label {
+        color: #fff;
+      }
+
+      /* Toggle Switch */
+      .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 48px;
+        height: 24px;
+      }
+
+      .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(255, 255, 255, 0.2);
+        transition: 0.4s;
+        border-radius: 24px;
+      }
+
+      .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: 0.4s;
+        border-radius: 50%;
+      }
+
+      input:checked + .toggle-slider {
+        background-color: #8b5cf6;
+      }
+
+      input:checked + .toggle-slider:before {
+        transform: translateX(24px);
+      }
+
+      /* Text Size Options */
+      .text-size-options {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .text-size-option {
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+      .text-size-option.active {
+        background: #8b5cf6;
+      }
+
+      .text-size-option:hover:not(.active) {
+        background: rgba(139, 92, 246, 0.3);
+      }
+
+      /* User info in header */
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.5rem;
+        transition: background 0.3s ease;
+      }
+
+      .user-info:hover {
+        background: rgba(139, 92, 246, 0.2);
+      }
+
+      .user-avatar {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        background: #8b5cf6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: bold;
+      }
+
+      .user-name {
+        font-weight: 600;
+        color: #ffffff;
+      }
+
+      body.dark-mode .user-name {
+        color: #ffffff;
+      }
+
+      /* Header buttons */
+      .header-buttons {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .icon-button {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(139, 92, 246, 0.2);
+        color: #8b5cf6;
+        cursor: pointer;
+        transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
+        box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
+      }
+
+      .icon-button:hover {
+        background: rgba(139, 92, 246, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+      }
+
+      body.dark-mode .icon-button {
+        background: rgba(139, 92, 246, 0.2);
+        color: #8b5cf6;
+      }
+
+      body.dark-mode .icon-button:hover {
+        background: rgba(139, 92, 246, 0.3);
+      }
+
+      /* User dropdown menu */
+      .user-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: rgba(0, 0, 0, 0.8);
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3),
+          0 0 10px rgba(139, 92, 246, 0.3);
+        width: 200px;
+        z-index: 100;
+        overflow: hidden;
+        display: none;
+        border: 1px solid rgba(139, 92, 246, 0.2);
+      }
+
+      body.dark-mode .user-dropdown {
+        background: rgba(0, 0, 0, 0.8);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3),
+          0 0 10px rgba(139, 92, 246, 0.3);
+      }
+
+      .user-dropdown.show {
+        display: block;
+      }
+
+      .dropdown-item {
+        padding: 0.75rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #ffffff;
+        transition: background 0.3s ease;
+        cursor: pointer;
+      }
+
+      .dropdown-item:hover {
+        background: rgba(139, 92, 246, 0.2);
+      }
+
+      body.dark-mode .dropdown-item {
+        color: #ffffff;
+      }
+
+      body.dark-mode .dropdown-item:hover {
+        background: rgba(139, 92, 246, 0.2);
+      }
+
+      .dropdown-divider {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.1);
+        margin: 0.25rem 0;
+      }
+
+      body.dark-mode .dropdown-divider {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      /* Mood tracker dashboard */
+      #moodTrackerModal .modal-content {
+        max-width: 900px;
+      }
+
+      .mood-tabs {
+        display: flex;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+      }
+
+      .mood-tab {
+        flex: 1;
+        text-align: center;
+        padding: 0.75rem;
+        cursor: pointer;
+        color: #a78bfa;
+        transition: color 0.3s ease, border-color 0.3s ease;
+        border-bottom: 2px solid transparent;
+      }
+
+      .mood-tab.active {
+        color: #8b5cf6;
+        border-color: #8b5cf6;
+      }
+
+      .mood-tab-content {
+        display: none;
+      }
+
+      .mood-tab-content.active {
+        display: block;
+      }
+
+      .recommendations-list {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .recommendation-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        background: rgba(139, 92, 246, 0.1);
+        border-radius: 0.5rem;
+        border: 1px solid rgba(139, 92, 246, 0.2);
+      }
+
+      .recommendation-icon {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        background: rgba(139, 92, 246, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .recommendation-text {
+        flex: 1;
+        color: #fff;
+      }
+
+      /* Loading spinner */
+      .loading-spinner {
+        display: inline-block;
+        width: 1.5rem;
+        height: 1.5rem;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 1s ease-in-out infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Font size classes */
+      .text-size-small {
+        font-size: 0.875rem;
+      }
+
+      .text-size-medium {
+        font-size: 1rem;
+      }
+
+      .text-size-large {
+        font-size: 1.125rem;
+      }
+
+      /* Home page specific styles */
+      .home-container {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .home-title {
+        font-size: 4rem;
+        font-weight: bold;
+        color: #8b5cf6;
+        margin-bottom: 1.5rem;
+        text-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+        position: relative;
+        z-index: 2;
+      }
+
+      body.dark-mode .home-title {
+        color: #8b5cf6;
+        text-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+      }
+
+      .home-subtitle {
+        font-size: 1.5rem;
+        color: #ffffff;
+        margin-bottom: 3rem;
+        max-width: 800px;
+        position: relative;
+        z-index: 2;
+      }
+
+      body.dark-mode .home-subtitle {
+        color: #ffffff;
+      }
+
+      .home-features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+        max-width: 1200px;
+        width: 100%;
+        position: relative;
+        z-index: 2;
+      }
+
+      .feature-card {
+        background: rgba(0, 0, 0, 0.6);
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+        border-radius: 1rem;
+        padding: 2rem;
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid rgba(139, 92, 246, 0.3);
+        box-shadow: 0 10px 25px rgba(139, 92, 246, 0.2);
+      }
+
+      .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(139, 92, 246, 0.3);
+      }
+
+      body.dark-mode .feature-card {
+        background: rgba(0, 0, 0, 0.6);
+        border-color: rgba(139, 92, 246, 0.3);
+      }
+
+      body.dark-mode .feature-card:hover {
+        box-shadow: 0 15px 30px rgba(139, 92, 246, 0.3);
+      }
+
+      .feature-icon {
+        font-size: 2.5rem;
+        color: #8b5cf6;
+        margin-bottom: 1rem;
+      }
+
+      body.dark-mode .feature-icon {
+        color: #8b5cf6;
+      }
+
+      .feature-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #ffffff;
+        margin-bottom: 0.5rem;
+      }
+
+      body.dark-mode .feature-title {
+        color: #ffffff;
+      }
+
+      .feature-description {
+        color: #ffffff;
+        line-height: 1.5;
+      }
+
+      body.dark-mode .feature-description {
+        color: #ffffff;
+      }
+
+      .get-started-button {
+        padding: 1rem 2.5rem;
+        background: #8b5cf6;
+        color: white;
+        font-size: 1.25rem;
+        font-weight: bold;
+        border-radius: 0.5rem;
+        transition: background 0.3s ease, transform 0.3s ease,
+          box-shadow 0.3s ease;
+        box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+        position: relative;
+        z-index: 2;
+      }
+
+      .get-started-button:hover {
+        background: #7c3aed;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(139, 92, 246, 0.5);
+      }
+
+      body.dark-mode .get-started-button {
+        background: #8b5cf6;
+        box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+      }
+
+      body.dark-mode .get-started-button:hover {
+        background: #7c3aed;
+        box-shadow: 0 8px 20px rgba(139, 92, 246, 0.5);
+      }
+
+      /* Auth page styles */
+      .auth-container {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+        background: var(--dark-bg);
+        background-image: var(--dark-dots);
+        position: relative;
+        overflow: hidden;
+      }
+
+      body.dark-mode .auth-container {
+        background: var(--dark-bg);
+        background-image: var(--dark-dots);
+      }
+
+      .auth-card {
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 1rem;
+        padding: 2.5rem;
+        width: 100%;
+        max-width: 450px;
+        box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+        border: 1px solid rgba(139, 92, 246, 0.3);
+        transition: transform 0.3s ease;
+        position: relative;
+        z-index: 2;
+      }
+
+      body.dark-mode .auth-card {
+        background: rgba(0, 0, 0, 0.6);
+        border-color: rgba(139, 92, 246, 0.3);
+        box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+      }
+
+      .auth-logo {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .auth-logo h1 {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #8b5cf6;
+        text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+      }
+
+      body.dark-mode .auth-logo h1 {
+        color: #8b5cf6;
+        text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+      }
+
+      .auth-tabs {
+        display: flex;
+        margin-bottom: 2rem;
+        border-bottom: 2px solid rgba(139, 92, 246, 0.3);
+      }
+
+      body.dark-mode .auth-tabs {
+        border-color: rgba(139, 92, 246, 0.3);
+      }
+
+      .auth-tab {
+        flex: 1;
+        text-align: center;
+        padding: 0.75rem 0;
+        font-weight: 600;
+        color: #ffffff;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -2px;
+      }
+
+      .auth-tab.active {
+        color: #8b5cf6;
+        border-color: #8b5cf6;
+      }
+
+      body.dark-mode .auth-tab {
+        color: #ffffff;
+      }
+
+      body.dark-mode .auth-tab.active {
+        color: #8b5cf6;
+        border-color: #8b5cf6;
+      }
+
+      .auth-form {
+        display: none;
+      }
+
+      .auth-form.active {
+        display: block;
+      }
+
+      .auth-input-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .auth-input-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #ffffff;
+      }
+
+      body.dark-mode .auth-input-group label {
+        color: #ffffff;
+      }
+
+      .auth-input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid rgba(139, 92, 246, 0.3);
+        background: rgba(0, 0, 0, 0.3);
+        color: #ffffff;
+        transition: all 0.3s ease;
+      }
+
+      .auth-input:focus {
+        outline: none;
+        border-color: #8b5cf6;
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2),
+          0 0 15px rgba(139, 92, 246, 0.3);
+      }
+
+      body.dark-mode .auth-input {
+        background: rgba(0, 0, 0, 0.3);
+        border-color: rgba(139, 92, 246, 0.3);
+        color: #ffffff;
+      }
+
+      body.dark-mode .auth-input:focus {
+        border-color: #8b5cf6;
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2),
+          0 0 15px rgba(139, 92, 246, 0.3);
+      }
+
+      .auth-button {
+        width: 100%;
+        padding: 0.75rem;
+        background: #8b5cf6;
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease,
+          box-shadow 0.3s ease;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3);
+      }
+
+      .auth-button:hover {
+        background: #7c3aed;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(139, 92, 246, 0.4);
+      }
+
+      body.dark-mode .auth-button {
+        background: #8b5cf6;
+      }
+
+      body.dark-mode .auth-button:hover {
+        background: #7c3aed;
+      }
+
+      .auth-error {
+        color: #ef4444;
+        margin-top: 1rem;
+        text-align: center;
+        font-size: 0.875rem;
+      }
+
+      .auth-success {
+        color: #10b981;
+        margin-top: 1rem;
+        text-align: center;
+        font-size: 0.875rem;
+      }
+
+      .auth-footer {
+        margin-top: 2rem;
+        text-align: center;
+        color: #ffffff;
+        font-size: 0.875rem;
+      }
+
+      body.dark-mode .auth-footer {
+        color: #ffffff;
+      }
+
+      .auth-link {
+        color: #8b5cf6;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+      }
+
+      .auth-link:hover {
+        color: #7c3aed;
+        text-decoration: underline;
+      }
+
+      body.dark-mode .auth-link {
+        color: #8b5cf6;
+      }
+
+      body.dark-mode .auth-link:hover {
+        color: #7c3aed;
+      }
+
+      /* Logout button */
+      .logout-button {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        padding: 0.5rem 1rem;
+        background: rgba(139, 92, 246, 0.2);
+        color: #8b5cf6;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 50;
+        box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
+      }
+
+      .logout-button:hover {
+        background: rgba(139, 92, 246, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+      }
+
+      body.dark-mode .logout-button {
+        background: rgba(139, 92, 246, 0.2);
+        color: #8b5cf6;
+      }
+
+      body.dark-mode .logout-button:hover {
+        background: rgba(139, 92, 246, 0.3);
+      }
+
+      /* Hidden class */
+      .hidden {
+        display: none !important;
+      }
+
+      /* Audio Visualizer Styles */
+      .audio-visualizer-container {
+        width: 100%;
+        height: 80px;
+        margin: 1rem 0;
+        position: relative;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(139, 92, 246, 0.3);
+      }
+
+      .audio-visualizer {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      .visualizer-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          rgba(139, 92, 246, 0.2) 0%,
+          rgba(236, 72, 153, 0.2) 100%
+        );
+        pointer-events: none;
+      }
+
+      .visualizer-label {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.875rem;
+        font-weight: 500;
+        pointer-events: none;
+        text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+      }
+
+      .visualizer-active .visualizer-label {
+        display: none;
+      }
+
+      /* Message audio visualizer */
+      .message-audio-visualizer {
+        width: 100%;
+        height: 40px;
+        margin-top: 0.5rem;
+        border-radius: 0.25rem;
+        overflow: hidden;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Home Page Container -->
+    <div id="homeContainer" class="home-container">
+      <h1 class="home-title">EMOFUSION</h1>
+      <p class="home-subtitle">
+        An advanced AI-powered emotional intelligence assistant that analyzes
+        your facial expressions, speech patterns, and text to provide
+        personalized therapeutic support.
+      </p>
+
+      <div class="home-features">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-brain"></i>
+          </div>
+          <h3 class="feature-title">Emotion Detection</h3>
+          <p class="feature-description">
+            Real-time analysis of facial expressions and speech patterns to
+            accurately detect your emotional state.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-comment-dots"></i>
+          </div>
+          <h3 class="feature-title">Therapeutic Conversations</h3>
+          <p class="feature-description">
+            Engage in supportive conversations with our AI assistant that
+            provides personalized emotional guidance.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <h3 class="feature-title">Mood Tracking</h3>
+          <p class="feature-description">
+            Track your emotional patterns over time and gain insights into your
+            emotional well-being.
+          </p>
+        </div>
+      </div>
+
+      <button id="getStartedButton" class="get-started-button">
+        Get Started
+      </button>
+
+      <!-- Sparkles animation -->
+      <div id="sparklesContainer"></div>
+    </div>
+
+    <!-- Auth Container (Initially Hidden) -->
+    <div id="authContainer" class="auth-container hidden">
+      <div class="auth-card">
+        <div class="auth-logo">
+          <h1>EMOFUSION</h1>
+        </div>
+
+        <div class="auth-tabs">
+          <div class="auth-tab active" data-tab="login">Login</div>
+          <div class="auth-tab" data-tab="register">Register</div>
+        </div>
+
+        <form id="loginForm" class="auth-form active">
+          <div class="auth-input-group">
+            <label for="loginEmail">Email</label>
+            <input
+              type="email"
+              id="loginEmail"
+              class="auth-input"
+              placeholder="your.email@example.com"
+              required
+            />
+          </div>
+          <div class="auth-input-group">
+            <label for="loginPassword">Password</label>
+            <input
+              type="password"
+              id="loginPassword"
+              class="auth-input"
+              placeholder="••••••••"
+              required
+            />
+          </div>
+          <div id="loginError" class="auth-error hidden"></div>
+          <button type="submit" id="loginSubmit" class="auth-button">
+            <span>Login</span>
+          </button>
+        </form>
+
+        <form id="registerForm" class="auth-form">
+          <div class="auth-input-group">
+            <label for="registerName">Full Name</label>
+            <input
+              type="text"
+              id="registerName"
+              class="auth-input"
+              placeholder="John Doe"
+              required
+            />
+          </div>
+          <div class="auth-input-group">
+            <label for="registerEmail">Email</label>
+            <input
+              type="email"
+              id="registerEmail"
+              class="auth-input"
+              placeholder="your.email@example.com"
+              required
+            />
+          </div>
+          <div class="auth-input-group">
+            <label for="registerPassword">Password</label>
+            <input
+              type="password"
+              id="registerPassword"
+              class="auth-input"
+              placeholder="••••••••"
+              required
+            />
+          </div>
+          <div id="registerError" class="auth-error hidden"></div>
+          <button type="submit" id="registerSubmit" class="auth-button">
+            <span>Create Account</span>
+          </button>
+        </form>
+
+        <div class="auth-footer">
+          <p>
+            By continuing, you agree to our
+            <a href="#" class="auth-link">Terms of Service</a> and
+            <a href="#" class="auth-link">Privacy Policy</a>.
+          </p>
+        </div>
+      </div>
+
+      <!-- Sparkles animation -->
+      <div id="authSparklesContainer"></div>
+    </div>
+
+    <!-- Application Container (Initially Hidden) -->
+    <div
+      id="appContainer"
+      class="container mx-auto px-4 py-4 flex-1 flex flex-col max-w-6xl hidden"
+    >
+      <!-- Logout Button -->
+      <button id="logoutButton" class="logout-button">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Logout</span>
+      </button>
+
+      <div class="header-container">
+        <div class="flex items-center gap-4">
+          <h1 class="text-[3.52rem] font-bold text-violet-400">EMOFUSION</h1>
+          <div id="userContainer" class="relative hidden">
+            <div id="userInfo" class="user-info">
+              <div id="userAvatar" class="user-avatar">
+                <i class="fas fa-user"></i>
+              </div>
+              <div id="userName" class="user-name">Guest</div>
+              <i class="fas fa-chevron-down ml-1"></i>
+            </div>
+            <div id="userDropdown" class="user-dropdown">
+              <div class="dropdown-item" id="profileMenuItem">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+              </div>
+              <div class="dropdown-item" id="historyMenuItem">
+                <i class="fas fa-history"></i>
+                <span>History</span>
+              </div>
+              <div class="dropdown-divider"></div>
+              <div class="dropdown-item" id="logoutMenuItem">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="header-buttons">
+          <button id="progressButton" class="button primary-button">
+            <i class="fas fa-chart-line"></i>
+            <span>Progress</span>
+          </button>
+          <button id="settingsButton" class="icon-button" title="Open settings">
+            <i class="fas fa-cog"></i>
+          </button>
+          <button id="themeToggle" class="icon-button" title="Toggle dark mode">
+            <i class="fas fa-moon"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="main-content">
+        <div class="glass-panel p-6">
+          <div class="left-column">
+            <div class="video-container bg-black/20 relative mb-4">
+              <div
+                id="videoLoadingSpinner"
+                class="absolute inset-0 flex items-center justify-center bg-black/50 z-10"
+              >
+                <div
+                  class="animate-spin rounded-full h-12 w-12 border-4 border-violet-400 border-t-transparent"
+                ></div>
+              </div>
+              <img
+                id="videoFeed"
+                src="/video_feed"
+                alt="Video feed"
+                class="w-full h-full object-cover"
+                onload="handleVideoLoad()"
+                onerror="handleVideoError()"
+              />
+              <div
+                id="recordingIndicator"
+                class="hidden absolute top-4 right-4 bg-red-500/90 text-white px-4 py-1 rounded-full recording-animation text-sm font-medium"
+              >
+                Recording
+              </div>
+            </div>
+
+            <!-- Audio Visualizer -->
+            <div class="audio-visualizer-container">
+              <canvas id="audioVisualizer" class="audio-visualizer"></canvas>
+              <div class="visualizer-overlay"></div>
+              <div id="visualizerLabel" class="visualizer-label">
+                Audio Visualizer
+              </div>
+            </div>
+
+            <div class="controls-section">
+              <div id="progressContainer">
+                <div class="progress-bar">
+                  <div id="progressBarFill" class="progress-bar-fill"></div>
+                </div>
+                <div
+                  id="progressStatus"
+                  class="text-sm text-center text-violet-400 font-medium mt-1"
+                >
+                  Processing...
+                </div>
+              </div>
+
+              <div class="flex justify-center mb-4">
+                <button
+                  id="recordButton"
+                  class="flex items-center gap-3 px-8 py-3 bg-violet-700 text-violet-100 text-lg font-medium rounded-full hover:bg-violet-600 transition-all shadow-lg hover:shadow-violet-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled
+                >
+                  <i class="fas fa-microphone"></i>
+                  <span>Start Recording</span>
+                </button>
+              </div>
+
+              <div
+                id="timer"
+                class="hidden text-center text-violet-400 font-semibold text-xl h-8 mb-4"
+              ></div>
+
+              <div class="status-emotion-container">
+                <div
+                  id="status"
+                  class="text-lg text-violet-400 text-center font-medium mb-4"
+                >
+                  Status:
+                  <span class="font-bold text-violet-300">Initializing...</span>
+                </div>
+                <div
+                  id="currentEmotionContainer"
+                  class="p-4 rounded-lg bg-violet-900/10 border-2 border-violet-800/30"
+                >
+                  <div class="flex items-center justify-center gap-3">
+                    <i class="fas fa-brain text-2xl text-violet-400"></i>
+                    <div>
+                      <div class="text-violet-400 text-base mb-1">
+                        Current Emotion
+                      </div>
+                      <div
+                        id="currentEmotion"
+                        class="text-xl font-bold text-violet-300"
+                      >
+                        Detecting...
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                id="errorDisplay"
+                class="hidden p-4 bg-red-900/50 text-red-300 rounded-lg text-base font-medium mt-4"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-panel p-6">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <div class="p-3 rounded-full bg-violet-700/40">
+                <i class="fas fa-user-md text-xl text-violet-300"></i>
+              </div>
+              <h2 class="text-2xl font-bold text-violet-300">
+                Therapeutic Conversation
+              </h2>
+            </div>
+            <div class="flex gap-2">
+              <button
+                id="exportChat"
+                class="text-violet-400 hover:text-violet-300 transition-colors p-2"
+                title="Export conversation"
+              >
+                <i class="fas fa-download text-xl"></i>
+              </button>
+              <button
+                id="clearChat"
+                class="text-violet-400 hover:text-violet-300 transition-colors p-2"
+                title="Clear chat"
+              >
+                <i class="fas fa-trash text-xl"></i>
+              </button>
+            </div>
+          </div>
+          <div
+            id="chatContainer"
+            class="flex-1 overflow-y-auto pr-2 flex flex-col-reverse gap-4"
+          >
+            <div class="chat-message">
+              <div class="p-4 rounded-lg bg-violet-900/20 mr-12 max-w-[80%]">
+                <div class="flex items-start gap-3">
+                  <div class="bg-violet-700 rounded-full p-3 shrink-0">
+                    <i class="fas fa-user-md text-violet-100 text-lg"></i>
+                  </div>
+                  <div>
+                    <p class="text-violet-100 text-lg leading-relaxed">
+                      Hello! I'm your AI psychiatric assistant. I'll analyze
+                      your emotions and speech to provide supportive feedback.
+                      Feel free to share how you're feeling via audio or text.
+                    </p>
+                    <div class="text-sm text-violet-400/70 mt-1">
+                      <span id="messageTime"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Text Input Section -->
+          <div class="text-input-container">
+            <input
+              type="text"
+              id="textInput"
+              class="text-input"
+              placeholder="Type your message here..."
+            />
+            <button id="submitText" class="submit-button">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress Modal -->
+    <div id="progressModal" class="modal">
+      <div class="modal-content">
+        <span id="modalClose" class="modal-close">×</span>
+        <h2 class="text-2xl font-bold text-violet-300 mb-4">
+          Patient Progress Report
+        </h2>
+        <div class="chart-container">
+          <canvas id="emotionTrendChart"></canvas>
+        </div>
+        <div class="chart-container">
+          <canvas id="emotionPieChart"></canvas>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <h3>Total Interactions</h3>
+            <p id="totalInteractions">0</p>
+          </div>
+          <div class="stat-card">
+            <h3>Positive Emotions</h3>
+            <p id="positivePercentage">0%</p>
+          </div>
+          <div class="stat-card">
+            <h3>Negative Emotions</h3>
+            <p id="negativePercentage">0%</p>
+          </div>
+        </div>
+        <button id="downloadPDFButton" class="button success-button mt-4">
+          <i class="fas fa-download"></i>
+          <span>Download PDF Report</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mood Tracker Modal -->
+    <div id="moodTrackerModal" class="modal">
+      <div class="modal-content">
+        <span id="moodTrackerClose" class="modal-close">×</span>
+        <h2 class="text-2xl font-bold text-violet-300 mb-4">
+          Mood Tracker Dashboard
+        </h2>
+
+        <div class="mood-tabs">
+          <div class="mood-tab active" data-tab="trends">Emotion Trends</div>
+          <div class="mood-tab" data-tab="distribution">Distribution</div>
+          <div class="mood-tab" data-tab="recommendations">Recommendations</div>
+        </div>
+
+        <div id="trendsContent" class="mood-tab-content active">
+          <div class="chart-container">
+            <canvas id="moodTrendChart"></canvas>
+          </div>
+          <p class="text-white mt-4">
+            This chart shows your emotional trends over time. The higher the
+            line, the stronger the emotion was detected.
+          </p>
+        </div>
+
+        <div id="distributionContent" class="mood-tab-content">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="chart-container">
+              <canvas id="moodPieChart"></canvas>
+            </div>
+            <div class="chart-container">
+              <canvas id="moodBarChart"></canvas>
+            </div>
+          </div>
+          <p class="text-white mt-4">
+            These charts show the distribution of your emotions across all
+            interactions.
+          </p>
+        </div>
+
+        <div id="recommendationsContent" class="mood-tab-content">
+          <h3 class="text-xl font-bold text-violet-400 mb-4">
+            Personalized Recommendations
+          </h3>
+          <ul id="recommendationsList" class="recommendations-list">
+            <li class="recommendation-item">
+              <div class="recommendation-icon">
+                <i class="fas fa-spinner fa-spin"></i>
+              </div>
+              <div class="recommendation-text">
+                Loading recommendations based on your emotional patterns...
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Panel -->
+    <div id="settingsPanel">
+      <div class="settings-header">
+        <h2 class="text-xl font-bold text-violet-400">Settings</h2>
+        <div id="settingsClose" class="settings-close">×</div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-title">Appearance</div>
+        <div class="settings-option">
+          <label for="darkModeToggle" class="settings-option-label"
+            >Dark Mode</label
+          >
+          <div class="toggle-switch">
+            <input
+              type="checkbox"
+              id="darkModeToggle"
+              aria-label="Toggle dark mode"
+              checked
+            />
+            <span class="toggle-slider"></span>
+          </div>
+        </div>
+        <div class="settings-option">
+          <label class="settings-option-label">Text Size</label>
+          <div class="text-size-options">
+            <button
+              type="button"
+              class="text-size-option"
+              data-size="small"
+              aria-label="Small text size"
+            >
+              S
+            </button>
+            <button
+              type="button"
+              class="text-size-option active"
+              data-size="medium"
+              aria-label="Medium text size"
+            >
+              M
+            </button>
+            <button
+              type="button"
+              class="text-size-option"
+              data-size="large"
+              aria-label="Large text size"
+            >
+              L
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-title">Audio</div>
+        <div class="settings-option">
+          <label for="audioToggle" class="settings-option-label"
+            >Enable Audio Responses</label
+          >
+          <div class="toggle-switch">
+            <input
+              type="checkbox"
+              id="audioToggle"
+              checked
+              aria-label="Toggle audio responses"
+            />
+            <span class="toggle-slider"></span>
+          </div>
+        </div>
+        <div class="settings-option">
+          <label for="visualizerToggle" class="settings-option-label"
+            >Enable Audio Visualizer</label
+          >
+          <div class="toggle-switch">
+            <input
+              type="checkbox"
+              id="visualizerToggle"
+              checked
+              aria-label="Toggle audio visualizer"
+            />
+            <span class="toggle-slider"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-title">Notifications</div>
+        <div class="settings-option">
+          <label for="notificationsToggle" class="settings-option-label"
+            >Enable Notifications</label
+          >
+          <div class="toggle-switch">
+            <input
+              type="checkbox"
+              id="notificationsToggle"
+              aria-label="Toggle notifications"
+            />
+            <span class="toggle-slider"></span>
+          </div>
+        </div>
+      </div>
+
+      <button id="saveSettings" class="login-button mt-4">Save Settings</button>
+    </div>
+
+    <script>
+      // Global variables
+      let currentUser = null;
+      let currentConversationId = null;
+      let userSettings = {
+        enable_audio: true,
+        enable_notifications: true,
+        enable_visualizer: true,
+        dark_mode: true,
+        text_size: "medium",
+      };
+      let mediaRecorder = null;
+      let audioChunks = [];
+      let isRecording = false;
+      let recordingStartTime = null;
+      let timerInterval = null;
+      let progressData = null;
+      let emotionTrendChart = null;
+      let emotionPieChart = null;
+      let moodTrendChart = null;
+      let moodPieChart = null;
+      let moodBarChart = null;
+
+      // Audio visualizer variables
+      let audioContext = null;
+      let analyser = null;
+      let visualizerCanvas = null;
+      let visualizerCanvasCtx = null;
+      let visualizerAnimationFrame = null;
+      let audioSource = null;
+      let isVisualizerActive = false;
+      let visualizerDataArray = null;
+
+      // Initialize application
+      document.addEventListener("DOMContentLoaded", function () {
+        initializeApp();
+        createSparkles();
+        initializeAudioVisualizer();
+      });
+
+      // Initialize audio visualizer
+      function initializeAudioVisualizer() {
+        visualizerCanvas = document.getElementById("audioVisualizer");
+        visualizerCanvasCtx = visualizerCanvas.getContext("2d");
+
+        // Set canvas dimensions
+        resizeVisualizer();
+
+        // Listen for window resize
+        window.addEventListener("resize", resizeVisualizer);
+
+        // Initialize visualizer toggle in settings
+        document.getElementById("visualizerToggle").checked =
+          userSettings.enable_visualizer;
+      }
+
+      function resizeVisualizer() {
+        if (visualizerCanvas) {
+          const container = visualizerCanvas.parentElement;
+          visualizerCanvas.width = container.clientWidth;
+          visualizerCanvas.height = container.clientHeight;
+        }
+      }
+
+      function setupAudioContext() {
+        try {
+          // Create audio context if it doesn't exist
+          if (!audioContext) {
+            audioContext = new (window.AudioContext ||
+              window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 256;
+            const bufferLength = analyser.frequencyBinCount;
+            visualizerDataArray = new Uint8Array(bufferLength);
+          }
+
+          return true;
+        } catch (error) {
+          console.error("Error setting up audio context:", error);
+          return false;
+        }
+      }
+
+      function startVisualizer(stream) {
+        if (!userSettings.enable_visualizer) return;
+
+        if (!setupAudioContext()) return;
+
+        try {
+          // Connect the stream to the analyser
+          if (stream) {
+            audioSource = audioContext.createMediaStreamSource(stream);
+            audioSource.connect(analyser);
+          }
+
+          // Mark visualizer as active
+          isVisualizerActive = true;
+          document
+            .querySelector(".audio-visualizer-container")
+            .classList.add("visualizer-active");
+
+          // Start drawing
+          drawVisualizer();
+        } catch (error) {
+          console.error("Error starting visualizer:", error);
+        }
+      }
+
+      function startPlaybackVisualizer(audioElement) {
+        if (!userSettings.enable_visualizer) return;
+
+        if (!setupAudioContext()) return;
+
+        try {
+          // Connect the audio element to the analyser
+          audioSource = audioContext.createMediaElementSource(audioElement);
+          audioSource.connect(analyser);
+          analyser.connect(audioContext.destination);
+
+          // Mark visualizer as active
+          isVisualizerActive = true;
+          document
+            .querySelector(".audio-visualizer-container")
+            .classList.add("visualizer-active");
+
+          // Start drawing
+          drawVisualizer();
+        } catch (error) {
+          console.error("Error starting playback visualizer:", error);
+        }
+      }
+
+      function stopVisualizer() {
+        isVisualizerActive = false;
+        document
+          .querySelector(".audio-visualizer-container")
+          .classList.remove("visualizer-active");
+
+        if (visualizerAnimationFrame) {
+          cancelAnimationFrame(visualizerAnimationFrame);
+          visualizerAnimationFrame = null;
+        }
+
+        if (audioSource) {
+          audioSource.disconnect();
+          audioSource = null;
+        }
+
+        // Clear canvas
+        if (visualizerCanvasCtx) {
+          visualizerCanvasCtx.clearRect(
+            0,
+            0,
+            visualizerCanvas.width,
+            visualizerCanvas.height
+          );
+        }
+      }
+
+      function drawVisualizer() {
+        if (!isVisualizerActive) return;
+
+        visualizerAnimationFrame = requestAnimationFrame(drawVisualizer);
+
+        analyser.getByteFrequencyData(visualizerDataArray);
+
+        visualizerCanvasCtx.clearRect(
+          0,
+          0,
+          visualizerCanvas.width,
+          visualizerCanvas.height
+        );
+
+        const barWidth =
+          (visualizerCanvas.width / visualizerDataArray.length) * 2.5;
+        let barHeight;
+        let x = 0;
+
+        for (let i = 0; i < visualizerDataArray.length; i++) {
+          barHeight = visualizerDataArray[i] / 2;
+
+          // Create gradient for bars
+          const gradient = visualizerCanvasCtx.createLinearGradient(
+            0,
+            0,
+            0,
+            visualizerCanvas.height
+          );
+          gradient.addColorStop(0, "rgba(139, 92, 246, 0.8)"); // Violet
+          gradient.addColorStop(0.5, "rgba(236, 72, 153, 0.8)"); // Pink
+          gradient.addColorStop(1, "rgba(139, 92, 246, 0.8)"); // Violet
+
+          visualizerCanvasCtx.fillStyle = gradient;
+
+          // Draw bar from center
+          const centerY = visualizerCanvas.height / 2;
+          visualizerCanvasCtx.fillRect(
+            x,
+            centerY - barHeight / 2,
+            barWidth,
+            barHeight
+          );
+
+          x += barWidth + 1;
+        }
+
+        // Add glow effect
+        visualizerCanvasCtx.shadowBlur = 15;
+        visualizerCanvasCtx.shadowColor = "rgba(139, 92, 246, 0.5)";
+      }
+
+      // Create sparkles animation
+      function createSparkles() {
+        const containers = [
+          document.getElementById("sparklesContainer"),
+          document.getElementById("authSparklesContainer"),
+        ];
+
+        containers.forEach((container) => {
+          if (!container) return;
+
+          // Clear any existing sparkles
+          container.innerHTML = "";
+
+          // Create sparkles
+          for (let i = 0; i < 50; i++) {
+            const sparkle = document.createElement("div");
+            sparkle.className = "sparkle";
+
+            // Random position
+            const x = Math.random() * 100;
+            const y = Math.random() * 100;
+
+            sparkle.style.left = `${x}%`;
+            sparkle.style.top = `${y}%`;
+
+            // Random size
+            const size = Math.random() * 3 + 1;
+            sparkle.style.width = `${size}px`;
+            sparkle.style.height = `${size}px`;
+
+            // Random animation delay
+            const delay = Math.random() * 5;
+            const duration = Math.random() * 3 + 2;
+            sparkle.style.animation = `sparkle ${duration}s ease-in-out ${delay}s infinite`;
+
+            // Random color
+            const colors = ["#8b5cf6", "#a78bfa", "#c4b5fd", "#ffffff"];
+            sparkle.style.backgroundColor =
+              colors[Math.floor(Math.random() * colors.length)];
+
+            container.appendChild(sparkle);
+          }
+        });
+      }
+
+      function initializeApp() {
+        // Check if user is logged in
+        checkAuthStatus();
+
+        // Initialize UI
+        initializeEventListeners();
+
+        // Check for dark mode preference
+        const prefersDarkMode = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+        if (prefersDarkMode) {
+          toggleDarkMode(true);
+        }
+
+        // Set initial text size
+        setTextSize(userSettings.textSize);
+      }
+
+      function initializeEventListeners() {
+        // Home page
+        document
+          .getElementById("getStartedButton")
+          .addEventListener("click", showAuthInterface);
+
+        // Auth page
+        document.querySelectorAll(".auth-tab").forEach((tab) => {
+          tab.addEventListener("click", () => {
+            const tabName = tab.getAttribute("data-tab");
+            switchAuthTab(tabName);
+          });
+        });
+        document
+          .getElementById("loginForm")
+          .addEventListener("submit", handleLogin);
+        document
+          .getElementById("registerForm")
+          .addEventListener("submit", handleRegister);
+
+        // Logout button
+        document
+          .getElementById("logoutButton")
+          .addEventListener("click", handleLogout);
+
+        // Recording and chat
+        document
+          .getElementById("recordButton")
+          .addEventListener("click", toggleRecording);
+        document
+          .getElementById("clearChat")
+          .addEventListener("click", clearChat);
+        document
+          .getElementById("exportChat")
+          .addEventListener("click", exportConversation);
+        document
+          .getElementById("submitText")
+          .addEventListener("click", processTextInput);
+        document
+          .getElementById("textInput")
+          .addEventListener("keypress", (e) => {
+            if (e.key === "Enter") processTextInput();
+          });
+
+        // Modals
+        document
+          .getElementById("progressButton")
+          .addEventListener("click", showProgressModal);
+        document.getElementById("modalClose").addEventListener("click", () => {
+          document.getElementById("progressModal").style.display = "none";
+          if (emotionTrendChart) emotionTrendChart.destroy();
+          if (emotionPieChart) emotionPieChart.destroy();
+        });
+        document
+          .getElementById("downloadPDFButton")
+          .addEventListener("click", downloadProgressPDF);
+
+        // User dropdown
+        document
+          .getElementById("userInfo")
+          ?.addEventListener("click", toggleUserDropdown);
+        document
+          .getElementById("logoutMenuItem")
+          ?.addEventListener("click", handleLogout);
+        document
+          .getElementById("profileMenuItem")
+          ?.addEventListener("click", showSettingsPanel);
+        document
+          .getElementById("historyMenuItem")
+          ?.addEventListener("click", showMoodTrackerModal);
+
+        // Settings
+        document
+          .getElementById("settingsButton")
+          .addEventListener("click", showSettingsPanel);
+        document
+          .getElementById("settingsClose")
+          .addEventListener("click", hideSettingsPanel);
+        document
+          .getElementById("darkModeToggle")
+          .addEventListener("change", (e) => {
+            toggleDarkMode(e.target.checked);
+          });
+        document
+          .getElementById("visualizerToggle")
+          .addEventListener("change", (e) => {
+            userSettings.enable_visualizer = e.target.checked;
+            if (!userSettings.enable_visualizer) {
+              stopVisualizer();
+            }
+          });
+        document
+          .getElementById("saveSettings")
+          .addEventListener("click", saveUserSettings);
+        document.querySelectorAll(".text-size-option").forEach((option) => {
+          option.addEventListener("click", () => {
+            const size = option.getAttribute("data-size");
+            setActiveTextSize(size);
+            setTextSize(size);
+          });
+        });
+
+        // Theme toggle
+        document.getElementById("themeToggle").addEventListener("click", () => {
+          const isDarkMode = document.body.classList.contains("dark-mode");
+          toggleDarkMode(!isDarkMode);
+          document.getElementById("darkModeToggle").checked = !isDarkMode;
+        });
+
+        // Mood tracker
+        document
+          .getElementById("moodTrackerClose")
+          ?.addEventListener("click", () => {
+            document.getElementById("moodTrackerModal").style.display = "none";
+            if (moodTrendChart) moodTrendChart.destroy();
+            if (moodPieChart) moodPieChart.destroy();
+            if (moodBarChart) moodBarChart.destroy();
+          });
+        document.querySelectorAll(".mood-tab").forEach((tab) => {
+          tab.addEventListener("click", () => {
+            const tabName = tab.getAttribute("data-tab");
+            switchMoodTab(tabName);
+          });
+        });
+
+        // Close dropdowns when clicking outside
+        document.addEventListener("click", (e) => {
+          const userDropdown = document.getElementById("userDropdown");
+          const userInfo = document.getElementById("userInfo");
+          if (
+            userDropdown &&
+            userDropdown.classList.contains("show") &&
+            !userDropdown.contains(e.target) &&
+            !userInfo.contains(e.target)
+          ) {
+            userDropdown.classList.remove("show");
+          }
+        });
+      }
+
+      // Show auth interface after clicking "Get Started"
+      function showAuthInterface() {
+        document.getElementById("homeContainer").classList.add("hidden");
+        document.getElementById("authContainer").classList.remove("hidden");
+        createSparkles();
+      }
+
+      // Switch between login and register tabs
+      function switchAuthTab(tabName) {
+        document.querySelectorAll(".auth-tab").forEach((tab) => {
+          if (tab.getAttribute("data-tab") === tabName) {
+            tab.classList.add("active");
+          } else {
+            tab.classList.remove("active");
+          }
+        });
+
+        if (tabName === "login") {
+          document.getElementById("loginForm").classList.add("active");
+          document.getElementById("registerForm").classList.remove("active");
+        } else {
+          document.getElementById("loginForm").classList.remove("active");
+          document.getElementById("registerForm").classList.add("active");
+        }
+      }
+
+      // Show app interface after successful login/register
+      function showAppInterface() {
+        document.getElementById("homeContainer").classList.add("hidden");
+        document.getElementById("authContainer").classList.add("hidden");
+        document.getElementById("appContainer").classList.remove("hidden");
+
+        // Initialize recording after showing app interface
+        initializeRecording();
+      }
+
+      // Initialize recording
+      async function initializeRecording() {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+          });
+          mediaRecorder = new MediaRecorder(stream);
+          mediaRecorder.ondataavailable = (event) =>
+            audioChunks.push(event.data);
+          mediaRecorder.onstop = async () => {
+            const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+            await processAudio(audioBlob);
+            stopVisualizer();
+          };
+          updateStatus("Ready", "green");
+          document.getElementById("recordButton").disabled = false;
+          hideError();
+        } catch (error) {
+          showError(
+            "Microphone access denied. Please check your browser permissions."
+          );
+          updateStatus("Microphone access denied", "red");
+          document.getElementById("recordButton").disabled = true;
+        }
+      }
+
+      // Authentication functions
+      async function checkAuthStatus() {
+        try {
+          const response = await fetch("/api/auth/user");
+          const data = await response.json();
+
+          if (data.authenticated) {
+            currentUser = data.user;
+            updateUIForLoggedInUser();
+            fetchUserSettings();
+            showAppInterface();
+          }
+        } catch (error) {
+          console.error("Error checking auth status:", error);
+        }
+      }
+
+      async function handleLogin(e) {
+        e.preventDefault();
+
+        const email = document.getElementById("loginEmail").value;
+        const password = document.getElementById("loginPassword").value;
+        const loginError = document.getElementById("loginError");
+        const loginSubmit = document.getElementById("loginSubmit");
+
+        loginError.classList.add("hidden");
+        loginSubmit.innerHTML = '<div class="loading-spinner"></div>';
+
+        try {
+          const response = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            currentUser = data.user;
+            updateUIForLoggedInUser();
+            fetchUserSettings();
+
+            // Create a new conversation
+            createNewConversation();
+
+            // Show app interface
+            showAppInterface();
+          } else {
+            loginError.textContent = data.error || "Login failed";
+            loginError.classList.remove("hidden");
+          }
+        } catch (error) {
+          console.error("Login error:", error);
+          loginError.textContent = "An error occurred. Please try again.";
+          loginError.classList.remove("hidden");
+        } finally {
+          loginSubmit.innerHTML = "<span>Login</span>";
+        }
+      }
+
+      async function handleRegister(e) {
+        e.preventDefault();
+
+        const name = document.getElementById("registerName").value;
+        const email = document.getElementById("registerEmail").value;
+        const password = document.getElementById("registerPassword").value;
+        const registerError = document.getElementById("registerError");
+        const registerSubmit = document.getElementById("registerSubmit");
+
+        registerError.classList.add("hidden");
+        registerSubmit.innerHTML = '<div class="loading-spinner"></div>';
+
+        try {
+          // First check if email already exists
+          const checkResponse = await fetch("/api/auth/check-email", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+          });
+
+          const checkData = await checkResponse.json();
+
+          if (checkData.exists) {
+            registerError.textContent =
+              "Email already registered. Please use a different email or login.";
+            registerError.classList.remove("hidden");
+            registerSubmit.innerHTML = "<span>Create Account</span>";
+            return;
+          }
+
+          // If email is unique, proceed with registration
+          const response = await fetch("/api/auth/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, email, password }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            currentUser = data.user;
+            updateUIForLoggedInUser();
+
+            // Create a new conversation
+            createNewConversation();
+
+            // Show app interface
+            showAppInterface();
+          } else {
+            // Handle other registration errors
+            registerError.textContent = data.error || "Registration failed";
+            registerError.classList.remove("hidden");
+          }
+        } catch (error) {
+          console.error("Registration error:", error);
+          registerError.textContent = "An error occurred. Please try again.";
+          registerError.classList.remove("hidden");
+        } finally {
+          registerSubmit.innerHTML = "<span>Create Account</span>";
+        }
+      }
+
+      async function handleLogout() {
+        try {
+          await fetch("/api/auth/logout", { method: "POST" });
+          currentUser = null;
+          currentConversationId = null;
+
+          // Return to home page
+          document.getElementById("appContainer").classList.add("hidden");
+          document.getElementById("homeContainer").classList.remove("hidden");
+
+          // Reset UI elements
+          document.getElementById("userDropdown")?.classList.remove("show");
+          clearChat();
+          createSparkles();
+        } catch (error) {
+          console.error("Logout error:", error);
+        }
+      }
+
+      function updateUIForLoggedInUser() {
+        document.getElementById("userContainer").classList.remove("hidden");
+        document.getElementById("userName").textContent = currentUser.name;
+        document.getElementById("userAvatar").textContent = currentUser.name
+          .charAt(0)
+          .toUpperCase();
+      }
+
+      function toggleUserDropdown() {
+        document.getElementById("userDropdown").classList.toggle("show");
+      }
+
+      // Conversation management
+      async function createNewConversation() {
+        if (!currentUser) return;
+
+        try {
+          const response = await fetch("/api/conversations", {
+            method: "POST",
+          });
+          const data = await response.json();
+
+          if (response.ok) {
+            currentConversationId = data.conversation_id;
+          }
+        } catch (error) {
+          console.error("Error creating conversation:", error);
+        }
+      }
+
+      async function exportConversation() {
+        try {
+          const response = await fetch("/export_conversation", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ format: "json" }),
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to export conversation");
+          }
+
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "conversation_history.json";
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+        } catch (error) {
+          console.error("Error exporting conversation:", error);
+          showError("Failed to export conversation history");
+        }
+      }
+
+      // Settings management
+      async function fetchUserSettings() {
+        if (!currentUser) return;
+
+        try {
+          const response = await fetch("/api/user/settings");
+
+          if (response.ok) {
+            const data = await response.json();
+            userSettings = data.settings;
+
+            // Update UI based on settings
+            document.getElementById("darkModeToggle").checked =
+              userSettings.dark_mode;
+            document.getElementById("audioToggle").checked =
+              userSettings.enable_audio;
+            document.getElementById("notificationsToggle").checked =
+              userSettings.enable_notifications;
+            document.getElementById("visualizerToggle").checked =
+              userSettings.enable_visualizer !== false; // Default to true if not set
+            setActiveTextSize(userSettings.text_size);
+            setTextSize(userSettings.text_size);
+
+            if (userSettings.dark_mode) {
+              toggleDarkMode(true);
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching user settings:", error);
+        }
+      }
+
+      async function saveUserSettings() {
+        const settings = {
+          enable_audio: document.getElementById("audioToggle").checked,
+          enable_notifications: document.getElementById("notificationsToggle")
+            .checked,
+          enable_visualizer:
+            document.getElementById("visualizerToggle").checked,
+          dark_mode: document.getElementById("darkModeToggle").checked,
+          text_size: getActiveTextSize(),
+        };
+
+        userSettings = settings;
+
+        if (currentUser) {
+          try {
+            await fetch("/api/user/settings", {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(settings),
+            });
+          } catch (error) {
+            console.error("Error saving settings:", error);
+          }
+        }
+
+        // Apply settings
+        toggleDarkMode(settings.dark_mode);
+        setTextSize(settings.text_size);
+
+        if (!settings.enable_visualizer) {
+          stopVisualizer();
+        }
+
+        hideSettingsPanel();
+      }
+
+      function setActiveTextSize(size) {
+        document.querySelectorAll(".text-size-option").forEach((option) => {
+          if (option.getAttribute("data-size") === size) {
+            option.classList.add("active");
+          } else {
+            option.classList.remove("active");
+          }
+        });
+      }
+
+      function getActiveTextSize() {
+        const activeOption = document.querySelector(".text-size-option.active");
+        return activeOption ? activeOption.getAttribute("data-size") : "medium";
+      }
+
+      function setTextSize(size) {
+        document.body.classList.remove(
+          "text-size-small",
+          "text-size-medium",
+          "text-size-large"
+        );
+        document.body.classList.add(`text-size-${size}`);
+      }
+
+      function toggleDarkMode(enable) {
+        if (enable) {
+          document.body.classList.add("dark-mode");
+          document.getElementById("themeToggle").innerHTML =
+            '<i class="fas fa-sun"></i>';
+        } else {
+          document.body.classList.remove("dark-mode");
+          document.getElementById("themeToggle").innerHTML =
+            '<i class="fas fa-moon"></i>';
+        }
+      }
+
+      function showSettingsPanel() {
+        document.getElementById("settingsPanel").classList.add("open");
+        document.getElementById("userDropdown")?.classList.remove("show");
+      }
+
+      function hideSettingsPanel() {
+        document.getElementById("settingsPanel").classList.remove("open");
+      }
+
+      async function showMoodTrackerModal() {
+        document.getElementById("moodTrackerModal").style.display = "flex";
+        document.getElementById("userDropdown")?.classList.remove("show");
+
+        try {
+          const response = await fetch("/progress_stats");
+          const data = await response.json();
+
+          if (data.status !== "success") {
+            throw new Error(data.error || "Failed to fetch stats");
+          }
+
+          renderMoodTrackerCharts(data);
+          loadRecommendations(data);
+        } catch (error) {
+          console.error("Error loading mood tracker data:", error);
+        }
+      }
+
+      function switchMoodTab(tabName) {
+        document.querySelectorAll(".mood-tab").forEach((tab) => {
+          if (tab.getAttribute("data-tab") === tabName) {
+            tab.classList.add("active");
+          } else {
+            tab.classList.remove("active");
+          }
+        });
+
+        document.querySelectorAll(".mood-tab-content").forEach((content) => {
+          if (content.id === `${tabName}Content`) {
+            content.classList.add("active");
+          } else {
+            content.classList.remove("active");
+          }
+        });
+      }
+
+      async function loadRecommendations(data) {
+        const recommendationsList = document.getElementById(
+          "recommendationsList"
+        );
+
+        // Get the dominant emotion
+        let dominantEmotion = "Neutral";
+        let maxCount = 0;
+
+        for (const [emotion, count] of Object.entries(data.emotion_counts)) {
+          if (count > maxCount) {
+            maxCount = count;
+            dominantEmotion = emotion;
+          }
+        }
+
+        try {
+          const response = await fetch("/get_recommendations", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ emotion: dominantEmotion }),
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to fetch recommendations");
+          }
+
+          const recommendationsData = await response.json();
+
+          if (recommendationsData.success) {
+            recommendationsList.innerHTML = "";
+
+            recommendationsData.recommendations.forEach((recommendation) => {
+              const li = document.createElement("li");
+              li.className = "recommendation-item";
+              li.innerHTML = `
+                <div class="recommendation-icon">
+                  <i class="fas fa-lightbulb"></i>
+                </div>
+                <div class="recommendation-text">
+                  ${recommendation}
+                </div>
+              `;
+              recommendationsList.appendChild(li);
+            });
+          }
+        } catch (error) {
+          console.error("Error loading recommendations:", error);
+          recommendationsList.innerHTML = `
+            <li class="recommendation-item">
+              <div class="recommendation-icon">
+                <i class="fas fa-exclamation-circle"></i>
+              </div>
+              <div class="recommendation-text">
+                Failed to load recommendations. Please try again later.
+              </div>
+            </li>
+          `;
+        }
+      }
+
+      function renderMoodTrackerCharts(data) {
+        if (moodTrendChart) moodTrendChart.destroy();
+        if (moodPieChart) moodPieChart.destroy();
+        if (moodBarChart) moodBarChart.destroy();
+
+        // Trend Chart
+        moodTrendChart = new Chart(document.getElementById("moodTrendChart"), {
+          type: "line",
+          data: {
+            labels: data.timestamps,
+            datasets: [
+              {
+                label: "Emotion Confidence",
+                data: data.emotions_over_time.map((e) => e.confidence * 100),
+                borderColor: "#8b5cf6",
+                backgroundColor: "rgba(139, 92, 246, 0.2)",
+                fill: true,
+                tension: 0.4,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 100,
+                title: {
+                  display: true,
+                  text: "Confidence (%)",
+                  color: "#fff",
+                },
+                ticks: {
+                  color: "#fff",
+                },
+                grid: {
+                  color: "rgba(255, 255, 255, 0.1)",
+                },
+              },
+              x: {
+                title: {
+                  display: true,
+                  text: "Time",
+                  color: "#fff",
+                },
+                ticks: {
+                  color: "#fff",
+                },
+                grid: {
+                  color: "rgba(255, 255, 255, 0.1)",
+                },
+              },
+            },
+            plugins: {
+              legend: {
+                labels: {
+                  color: "#fff",
+                },
+              },
+              tooltip: {
+                callbacks: {
+                  label: (context) => {
+                    const index = context.dataIndex;
+                    const emotion = data.emotions_over_time[index].emotion;
+                    return `${emotion}: ${context.parsed.y.toFixed(1)}%`;
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        // Pie Chart
+        moodPieChart = new Chart(document.getElementById("moodPieChart"), {
+          type: "pie",
+          data: {
+            labels: Object.keys(data.emotion_counts),
+            datasets: [
+              {
+                data: Object.values(data.emotion_counts),
+                backgroundColor: [
+                  "#ff0000", // Angry
+                  "#4b0082", // Disgust
+                  "#ebcb4b", // Fear
+                  "#ca3e82", // Happy
+                  "#1b4fd3", // Sad
+                  "#ff7f00", // Surprise
+                  "#00ff00", // Neutral
+                ],
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: "right",
+                labels: {
+                  color: "#fff",
+                },
+              },
+              title: {
+                display: true,
+                text: "Emotion Distribution",
+                color: "#fff",
+              },
+            },
+          },
+        });
+
+        // Bar Chart
+        moodBarChart = new Chart(document.getElementById("moodBarChart"), {
+          type: "bar",
+          data: {
+            labels: Object.keys(data.emotion_counts),
+            datasets: [
+              {
+                label: "Frequency",
+                data: Object.values(data.emotion_counts),
+                backgroundColor: [
+                  "#ff0000", // Angry
+                  "#4b0082", // Disgust
+                  "#ebcb4b", // Fear
+                  "#ca3e82", // Happy
+                  "#1b4fd3", // Sad
+                  "#ff7f00", // Surprise
+                  "#00ff00", // Neutral
+                ],
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: "Count",
+                  color: "#fff",
+                },
+                ticks: {
+                  color: "#fff",
+                },
+                grid: {
+                  color: "rgba(255, 255, 255, 0.1)",
+                },
+              },
+              x: {
+                ticks: {
+                  color: "#fff",
+                },
+                grid: {
+                  color: "rgba(255, 255, 255, 0.1)",
+                },
+              },
+            },
+            plugins: {
+              legend: {
+                labels: {
+                  color: "#fff",
+                },
+              },
+              title: {
+                display: true,
+                text: "Emotion Frequency",
+                color: "#fff",
+              },
+            },
+          },
+        });
+      }
+
+      async function showProgressModal() {
+        document.getElementById("progressModal").style.display = "flex";
+        try {
+          const response = await fetch("/progress_stats");
+          const data = await response.json();
+          if (data.status !== "success")
+            throw new Error(data.error || "Failed to fetch stats");
+          progressData = data;
+          document.getElementById("totalInteractions").textContent =
+            data.total_interactions;
+          document.getElementById(
+            "positivePercentage"
+          ).textContent = `${data.positive_percentage.toFixed(1)}%`;
+          document.getElementById(
+            "negativePercentage"
+          ).textContent = `${data.negative_percentage.toFixed(1)}%`;
+          if (emotionTrendChart) emotionTrendChart.destroy();
+          emotionTrendChart = new Chart(
+            document.getElementById("emotionTrendChart"),
+            {
+              type: "line",
+              data: {
+                labels: data.timestamps,
+                datasets: [
+                  {
+                    label: "Emotion Confidence",
+                    data: data.emotions_over_time.map(
+                      (e) => e.confidence * 100
+                    ),
+                    borderColor: "#8b5cf6",
+                    backgroundColor: "rgba(139, 92, 246, 0.2)",
+                    fill: true,
+                    tension: 0.4,
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    max: 100,
+                    title: {
+                      display: true,
+                      text: "Confidence (%)",
+                      color: "#fff",
+                    },
+                    ticks: {
+                      color: "#fff",
+                    },
+                    grid: {
+                      color: "rgba(255, 255, 255, 0.1)",
+                    },
+                  },
+                  x: {
+                    title: {
+                      display: true,
+                      text: "Time",
+                      color: "#fff",
+                    },
+                    ticks: {
+                      color: "#fff",
+                    },
+                    grid: {
+                      color: "rgba(255, 255, 255, 0.1)",
+                    },
+                  },
+                },
+                plugins: {
+                  legend: {
+                    labels: {
+                      color: "#fff",
+                    },
+                  },
+                },
+              },
+            }
+          );
+          if (emotionPieChart) emotionPieChart.destroy();
+          emotionPieChart = new Chart(
+            document.getElementById("emotionPieChart"),
+            {
+              type: "pie",
+              data: {
+                labels: Object.keys(data.emotion_counts),
+                datasets: [
+                  {
+                    data: Object.values(data.emotion_counts),
+                    backgroundColor: [
+                      "#ff0000", // Angry
+                      "#4b0082", // Disgust
+                      "#ebcb4b", // Fear
+                      "#ca3e82", // Happy
+                      "#1b4fd3", // Sad
+                      "#ff7f00", // Surprise
+                      "#00ff00", // Neutral
+                    ],
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                plugins: {
+                  legend: {
+                    position: "top",
+                    labels: {
+                      color: "#fff",
+                    },
+                  },
+                },
+              },
+            }
+          );
+        } catch (error) {
+          console.error("Error loading progress stats:", error);
+          document.getElementById(
+            "progressModal"
+          ).innerHTML = `<div class="modal-content"><span id="modalClose" class="modal-close">×</span><p class="text-red-500">Error loading progress data: ${error.message}</p></div>`;
+        }
+      }
+
+      function generateRecommendations(data) {
+        const emotionCounts = data.emotion_counts;
+        const total = Object.values(emotionCounts).reduce(
+          (sum, count) => sum + count,
+          0
+        );
+        const dominantEmotion = Object.keys(emotionCounts).reduce((a, b) =>
+          emotionCounts[a] > emotionCounts[b] ? a : b
+        );
+        const negativeEmotions = ["Sad", "Angry", "Fear", "Disgust"];
+        const positiveEmotions = ["Happy", "Neutral", "Surprise"];
+        const negativePercentage = data.negative_percentage;
+        let recommendations = [];
+        if (negativePercentage > 50) {
+          recommendations.push(
+            "You've experienced a higher level of negative emotions recently. Consider the following steps to improve your emotional well-being:"
+          );
+        } else {
+          recommendations.push(
+            "You've shown a good balance of emotions, with a positive outlook. Here are some tips to maintain and enhance your emotional health:"
+          );
+        }
+        if (
+          dominantEmotion === "Sad" ||
+          (emotionCounts["Sad"] && emotionCounts["Sad"] / total > 0.3)
+        ) {
+          recommendations.push(
+            "Practice mindfulness or meditation to help process feelings of sadness. Apps like Headspace or Calm can guide you."
+          );
+          recommendations.push(
+            "Reach out to a trusted friend or family member to share your feelings."
+          );
+          recommendations.push(
+            "Consider speaking with a mental health professional for additional support."
+          );
+        }
+        if (
+          dominantEmotion === "Angry" ||
+          (emotionCounts["Angry"] && emotionCounts["Angry"] / total > 0.3)
+        ) {
+          recommendations.push(
+            "Try deep breathing exercises or progressive muscle relaxation to manage anger."
+          );
+          recommendations.push(
+            "Engage in physical activity, such as a walk or workout, to release tension."
+          );
+          recommendations.push(
+            "Reflect on the triggers of your anger and consider journaling to understand patterns."
+          );
+        }
+        if (
+          dominantEmotion === "Fear" ||
+          (emotionCounts["Fear"] && emotionCounts["Fear"] / total > 0.3)
+        ) {
+          recommendations.push(
+            "Practice grounding techniques, such as the 5-4-3-2-1 method (name 5 things you see, 4 you can touch, etc.)."
+          );
+          recommendations.push(
+            "Create a safe space where you can relax and feel secure."
+          );
+          recommendations.push(
+            "If fear is persistent, consider consulting a therapist to explore underlying causes."
+          );
+        }
+        if (
+          dominantEmotion === "Happy" ||
+          (emotionCounts["Happy"] && emotionCounts["Happy"] / total > 0.3)
+        ) {
+          recommendations.push(
+            "Continue engaging in activities that bring you joy and fulfillment."
+          );
+          recommendations.push(
+            "Share your positive energy with others by connecting with friends or family."
+          );
+          recommendations.push(
+            "Maintain a gratitude journal to keep track of things that make you happy."
+          );
+        }
+        if (positiveEmotions.includes(dominantEmotion)) {
+          recommendations.push(
+            "Keep up the great work! Continue to engage in self-care practices to sustain your positive mood."
+          );
+        }
+        return recommendations;
+      }
+
+      async function downloadProgressPDF() {
+        if (!progressData) {
+          alert("Progress data is not available. Please try again.");
+          return;
+        }
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const margin = 15;
+        const lineHeight = 7;
+        let yPosition = margin;
+
+        function checkPageBreak(spaceNeeded) {
+          if (yPosition + spaceNeeded > pageHeight - margin) {
+            doc.addPage();
+            yPosition = margin;
+          }
+        }
+
+        function addText(text, x, y, options = {}) {
+          checkPageBreak(lineHeight);
+          doc.text(text, x, y, options);
+          yPosition += lineHeight;
+        }
+
+        function addSectionTitle(title) {
+          checkPageBreak(lineHeight * 2);
+          doc.setFontSize(16);
+          doc.setFont("helvetica", "bold");
+          addText(title, margin, yPosition);
+          doc.setFontSize(12);
+          doc.setFont("helvetica", "normal");
+          yPosition += 10;
+        }
+
+        function addParagraph(text) {
+          const maxWidth = pageWidth - 2 * margin;
+          const lines = doc.splitTextToSize(text, maxWidth);
+          lines.forEach((line) => {
+            checkPageBreak(lineHeight);
+            addText(line, margin, yPosition);
+          });
+          yPosition += 5;
+        }
+
+        function addBulletPoint(text) {
+          const maxWidth = pageWidth - 2 * margin - 10;
+          const lines = doc.splitTextToSize(`• ${text}`, maxWidth);
+          lines.forEach((line) => {
+            checkPageBreak(lineHeight);
+            addText(line, margin + 5, yPosition);
+          });
+          yPosition += 3;
+        }
+
+        doc.setFontSize(20);
+        doc.setFont("helvetica", "bold");
+        addText("Patient Progress Report", pageWidth / 2, yPosition, {
+          align: "center",
+        });
+        yPosition += 10;
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        addText(
+          `Generated on: ${new Date().toLocaleDateString()}`,
+          pageWidth / 2,
+          yPosition,
+          { align: "center" }
+        );
+        yPosition += 15;
+
+        addSectionTitle("Emotional Trends Summary");
+        const trendSummary =
+          progressData.emotions_over_time.length > 0
+            ? `Over the recorded period, your emotional confidence fluctuated. The most recent emotion recorded was ${
+                progressData.emotions_over_time[
+                  progressData.emotions_over_time.length - 1
+                ].emotion
+              } with a confidence of ${(
+                progressData.emotions_over_time[
+                  progressData.emotions_over_time.length - 1
+                ].confidence * 100
+              ).toFixed(1)}%.`
+            : "No emotional trends recorded yet.";
+        addParagraph(trendSummary);
+        yPosition += 5;
+
+        addSectionTitle("Statistics");
+        addBulletPoint(
+          `Total Interactions: ${progressData.total_interactions}`
+        );
+        addBulletPoint(
+          `Positive Emotions: ${progressData.positive_percentage.toFixed(1)}%`
+        );
+        addBulletPoint(
+          `Negative Emotions: ${progressData.negative_percentage.toFixed(1)}%`
+        );
+        yPosition += 5;
+
+        addSectionTitle("Emotion Breakdown");
+        for (const [emotion, count] of Object.entries(
+          progressData.emotion_counts
+        )) {
+          addBulletPoint(`${emotion}: ${count} time${count !== 1 ? "s" : ""}`);
+        }
+        yPosition += 5;
+
+        addSectionTitle("Recommendations for Emotional Well-Being");
+        const recommendations = generateRecommendations(progressData);
+        recommendations.forEach((recommendation) =>
+          addBulletPoint(recommendation)
+        );
+        yPosition += 5;
+
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "italic");
+        doc.text(
+          "Continue tracking your emotions with EMOFUSION for better insights and support.",
+          pageWidth / 2,
+          pageHeight - margin,
+          { align: "center" }
+        );
+        doc.save("Patient_Progress_Report.pdf");
+      }
+
+      function handleVideoLoad() {
+        document.getElementById("videoLoadingSpinner").style.display = "none";
+      }
+
+      function handleVideoError() {
+        const videoFeed = document.getElementById("videoFeed");
+        const spinner = document.getElementById("videoLoadingSpinner");
+        videoFeed.style.display = "none";
+        spinner.innerHTML = `
+            <div class="text-red-500 text-center">
+                <i class="fas fa-exclamation-circle text-xl"></i>
+                <p class="mt-2 text-sm">Camera unavailable. Please check permissions and refresh.</p>
+                <button id="retryVideo" class="mt-2 px-3 py-1 bg-violet-800 text-white rounded">Retry</button>
+            </div>
+        `;
+        document.getElementById("retryVideo")?.addEventListener("click", () => {
+          videoFeed.src = "/video_feed?" + new Date().getTime();
+          videoFeed.style.display = "block";
+          spinner.innerHTML = `
+                <div class="animate-spin rounded-full h-12 w-12 border-4 border-violet-400 border-t-transparent"></div>
+            `;
+        });
+      }
+
+      function updateProgressBar(progress) {
+        const progressBar = document.getElementById("progressBarFill");
+        const progressContainer = document.getElementById("progressContainer");
+        progressContainer.style.opacity = "1";
+        progressBar.style.width = `${progress}%`;
+        if (progress >= 100) {
+          setTimeout(() => {
+            progressContainer.style.opacity = "0";
+            progressBar.style.width = "0%";
+          }, 500);
+        }
+      }
+
+      function toggleRecording() {
+        if (!isRecording) {
+          audioChunks = [];
+          mediaRecorder.start();
+          recordingStartTime = Date.now();
+          timerInterval = setInterval(updateTimer, 1000);
+          document
+            .getElementById("recordingIndicator")
+            .classList.remove("hidden");
+          document.getElementById("timer").classList.remove("hidden");
+          document.getElementById("recordButton").innerHTML = `
+                  <i class="fas fa-stop"></i>
+                  <span>Stop Recording</span>
+              `;
+          document
+            .getElementById("recordButton")
+            .classList.replace("bg-violet-700", "bg-red-600");
+          document
+            .getElementById("recordButton")
+            .classList.replace("hover:bg-violet-600", "hover:bg-red-500");
+          updateStatus("Recording", "red");
+          isRecording = true;
+
+          // Start visualizer
+          if (userSettings.enable_visualizer) {
+            startVisualizer(mediaRecorder.stream);
+          }
+        } else {
+          mediaRecorder.stop();
+          clearInterval(timerInterval);
+          document.getElementById("recordingIndicator").classList.add("hidden");
+          document.getElementById("timer").classList.add("hidden");
+          document.getElementById("recordButton").innerHTML = `
+                  <i class="fas fa-microphone"></i>
+                  <span>Start Recording</span>
+              `;
+          document
+            .getElementById("recordButton")
+            .classList.replace("bg-red-600", "bg-violet-700");
+          document
+            .getElementById("recordButton")
+            .classList.replace("hover:bg-red-500", "hover:bg-violet-600");
+          isRecording = false;
+          updateCurrentEmotion("Detecting...");
+
+          // Stop visualizer
+          stopVisualizer();
+        }
+      }
+
+      function updateTimer() {
+        const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
+        const minutes = Math.floor(elapsed / 60)
+          .toString()
+          .padStart(2, "0");
+        const seconds = (elapsed % 60).toString().padStart(2, "0");
+        document.getElementById("timer").textContent = `${minutes}:${seconds}`;
+      }
+
+      function showError(message) {
+        const errorDisplay = document.getElementById("errorDisplay");
+        errorDisplay.textContent = message;
+        errorDisplay.classList.remove("hidden");
+      }
+
+      function hideError() {
+        document.getElementById("errorDisplay").classList.add("hidden");
+      }
+
+      function updateStatus(message, color) {
+        const colors = {
+          red: "text-red-400",
+          green: "text-green-400",
+          blue: "text-blue-400",
+        };
+        const status = document.getElementById("status");
+        status.innerHTML = `Status: <span class="font-semibold ${colors[color]}">${message}</span>`;
+      }
+
+      function getEmotionColorClass(emotion) {
+        const emotionClasses = {
+          Angry: "emotion-angry",
+          Disgust: "emotion-disgust",
+          Fear: "emotion-fear",
+          Happy: "emotion-happy",
+          Sad: "emotion-sad",
+          Surprise: "emotion-surprise",
+          Neutral: "emotion-neutral",
+          Unknown: "emotion-unknown",
+          "Detecting...": "emotion-detecting",
+        };
+        return emotionClasses[emotion] || "emotion-unknown";
+      }
+
+      function getEmotionEmoji(emotion) {
+        const emotionEmojis = {
+          Angry: "😠",
+          Disgust: "🤢",
+          Fear: "😨",
+          Happy: "😊",
+          Sad: "😢",
+          Surprise: "😲",
+          Neutral: "😐",
+          Unknown: "❓",
+          "Detecting...": "🔄",
+        };
+        return emotionEmojis[emotion] || "❓";
+      }
+
+      function updateCurrentEmotion(emotion, confidence = null) {
+        const currentEmotion = document.getElementById("currentEmotion");
+        const colorClass = getEmotionColorClass(emotion);
+        currentEmotion.classList.forEach((className) => {
+          if (className.startsWith("emotion-"))
+            currentEmotion.classList.remove(className);
+        });
+        currentEmotion.classList.add("emotion-color", colorClass);
+        currentEmotion.textContent =
+          confidence !== null
+            ? `${emotion} ${getEmotionEmoji(emotion)} (${(
+                confidence * 100
+              ).toFixed(1)}%)`
+            : `${emotion} ${getEmotionEmoji(emotion)}`;
+      }
+
+      async function processAudio(audioBlob) {
+        const formData = new FormData();
+        formData.append("file", audioBlob, "recording.wav");
+
+        // Add conversation ID if available
+        if (currentConversationId) {
+          formData.append("conversation_id", currentConversationId);
+        }
+
+        updateStatus("Processing", "blue");
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+          progress += 5;
+          if (progress <= 90) updateProgressBar(progress);
+        }, 100);
+
+        try {
+          const response = await fetch("/upload", {
+            method: "POST",
+            body: formData,
+          });
+          clearInterval(progressInterval);
+          updateProgressBar(100);
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "Processing failed");
+          }
+
+          const data = await response.json();
+          updateStatus("Ready", "green");
+          hideError();
+
+          if (data.transcript)
+            addChatMessage(
+              "user",
+              data.transcript,
+              data.emotion_data?.primary_emotion
+            );
+          if (data.emotion_data)
+            updateCurrentEmotion(
+              data.emotion_data.primary_emotion,
+              data.emotion_data.confidence
+            );
+          if (data.psychiatric_response) {
+            setTimeout(() => {
+              addChatMessage(
+                "assistant",
+                data.psychiatric_response,
+                null,
+                data.audio_data
+              );
+            }, 500);
+          }
+
+          // Update conversation ID if returned
+          if (data.conversation_id) {
+            currentConversationId = data.conversation_id;
+          }
+        } catch (error) {
+          clearInterval(progressInterval);
+          updateProgressBar(100);
+          showError(`Error: ${error.message}`);
+          updateStatus("Error occurred", "red");
+        }
+      }
+
+      async function processTextInput() {
+        const textInput = document.getElementById("textInput");
+        const submitButton = document.getElementById("submitText");
+        const text = textInput.value.trim();
+
+        if (!text) return;
+
+        submitButton.disabled = true;
+        updateStatus("Processing", "blue");
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+          progress += 5;
+          if (progress <= 90) updateProgressBar(progress);
+        }, 100);
+
+        try {
+          const requestBody = { text };
+
+          // Add conversation ID if available
+          if (currentConversationId) {
+            requestBody.conversation_id = currentConversationId;
+          }
+
+          const response = await fetch("/text_input", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(requestBody),
+          });
+
+          clearInterval(progressInterval);
+          updateProgressBar(100);
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "Processing failed");
+          }
+
+          const data = await response.json();
+          updateStatus("Ready", "green");
+          hideError();
+
+          if (data.transcript)
+            addChatMessage(
+              "user",
+              data.transcript,
+              data.emotion_data?.primary_emotion
+            );
+          if (data.emotion_data)
+            updateCurrentEmotion(
+              data.emotion_data.primary_emotion,
+              data.emotion_data.confidence
+            );
+          if (data.psychiatric_response) {
+            setTimeout(() => {
+              addChatMessage(
+                "assistant",
+                data.psychiatric_response,
+                null,
+                data.audio_data
+              );
+            }, 500);
+          }
+
+          // Update conversation ID if returned
+          if (data.conversation_id) {
+            currentConversationId = data.conversation_id;
+          }
+
+          textInput.value = ""; // Clear input after submission
+        } catch (error) {
+          clearInterval(progressInterval);
+          updateProgressBar(100);
+          showError(`Error: ${error.message}`);
+          updateStatus("Error occurred", "red");
+        } finally {
+          submitButton.disabled = false;
+        }
+      }
+
+      function playAudio(audioData) {
+        if (!userSettings.enable_audio) return;
+        try {
+          const audio = new Audio(`data:audio/mp3;base64,${audioData}`);
+          const buttons = document.querySelectorAll(".talk-back-button");
+          buttons.forEach((btn) => {
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i><span>Playing...</span>`;
+          });
+
+          // Start visualizer for playback
+          if (userSettings.enable_visualizer) {
+            startPlaybackVisualizer(audio);
+          }
+
+          audio.onended = () => {
+            buttons.forEach((btn) => {
+              btn.disabled = false;
+              btn.innerHTML = `<i class="fas fa-volume-up"></i><span>Talk Back</span>`;
+            });
+            // Stop visualizer when audio ends
+            stopVisualizer();
+          };
+
+          audio.onerror = (e) => {
+            console.error("Audio playback error:", e);
+            buttons.forEach((btn) => {
+              btn.disabled = false;
+              btn.innerHTML = `<i class="fas fa-volume-up"></i><span>Talk Back</span>`;
+            });
+            stopVisualizer();
+          };
+
+          audio.play().catch((error) => {
+            console.error("Error playing audio:", error);
+            buttons.forEach((btn) => {
+              btn.disabled = false;
+              btn.innerHTML = `<i class="fas fa-volume-up"></i><span>Talk Back</span>`;
+            });
+            stopVisualizer();
+          });
+        } catch (error) {
+          console.error("Error initializing audio playback:", error);
+          stopVisualizer();
+        }
+      }
+
+      function addChatMessage(role, message, emotion = null, audioData = null) {
+        const chatContainer = document.getElementById("chatContainer");
+        const messageDiv = document.createElement("div");
+        const isUser = role === "user";
+        const colorClass = emotion ? getEmotionColorClass(emotion) : "";
+        messageDiv.className = `chat-message ${
+          isUser ? "user-message" : "assistant-message"
+        }`;
+
+        // Create message audio visualizer if there's audio data
+        const audioVisualizerId = audioData
+          ? `message-visualizer-${Date.now()}`
+          : null;
+        const messageVisualizer =
+          audioData && userSettings.enable_visualizer
+            ? `<div class="message-audio-visualizer">
+            <canvas id="${audioVisualizerId}" width="100%" height="40"></canvas>
+          </div>`
+            : "";
+
+        const emotionDisplay = emotion
+          ? `<p class="text-sm mt-1 ${isUser ? "text-right" : ""}">
+                  Detected emotion: <span class="chat-emotion-text emotion-color ${colorClass}">${emotion}</span>
+               </p>`
+          : "";
+        const talkBackButton =
+          !isUser && audioData
+            ? `<button class="talk-back-button mt-2 px-3 py-1 bg-violet-700 text-violet-100 rounded-full text-sm flex items-center gap-2 hover:bg-violet-600 transition-colors" title="Click to hear this response">
+                 <i class="fas fa-volume-up"></i><span>Talk Back</span>
+               </button>`
+            : "";
+        messageDiv.innerHTML = `
+              <div class="p-4 rounded-lg ${
+                isUser ? "bg-white/5" : "bg-violet-900/20"
+              } ${isUser ? "ml-auto" : "mr-auto"}">
+                  <div class="flex items-start gap-3 ${
+                    isUser ? "flex-row-reverse" : ""
+                  }">
+                      <div class="bg-${
+                        isUser ? "violet-700/40" : "violet-700"
+                      } rounded-full p-3 shrink-0">
+                          <i class="fas fa-${
+                            isUser ? "user" : "user-md"
+                          } text-${
+          isUser ? "violet-300" : "violet-100"
+        } text-lg"></i>
+                      </div>
+                      <div class="${isUser ? "text-right" : ""}">
+                          <p class="text-violet-100 text-lg leading-relaxed">${message}</p>
+                          ${emotionDisplay}
+                          <div class="text-sm text-violet-400/70 mt-1">${new Date().toLocaleTimeString()}</div>
+                          ${talkBackButton}
+                          ${messageVisualizer}
+                      </div>
+                  </div>
+              </div>
+          `;
+        if (!isUser && audioData) {
+          const button = messageDiv.querySelector(".talk-back-button");
+          if (button) {
+            button.addEventListener("click", () => playAudio(audioData));
+          }
+
+          // Auto-play audio if enabled in settings
+          if (userSettings.enable_audio) {
+            setTimeout(() => {
+              playAudio(audioData);
+            }, 500);
+          }
+        }
+        chatContainer.insertBefore(messageDiv, chatContainer.firstChild);
+        chatContainer.scrollTop = 0;
+        if (emotion) {
+          const emotionSpan = messageDiv.querySelector(".chat-emotion-text");
+          if (emotionSpan) {
+            emotionSpan.style.color = getComputedStyle(
+              document.querySelector(`.${colorClass}`)
+            ).color;
+          }
+        }
+      }
+
+      function clearChat() {
+        const chatContainer = document.getElementById("chatContainer");
+        chatContainer.innerHTML = `
+            <div class="chat-message">
+                <div class="p-4 rounded-lg bg-violet-900/20 mr-12 max-w-[80%]">
+                    <div class="flex items-start gap-3">
+                        <div class="bg-violet-700 rounded-full p-3 shrink-0">
+                            <i class="fas fa-user-md text-violet-100 text-lg"></i>
+                        </div>
+                        <div>
+                            <p class="text-violet-100 text-lg leading-relaxed">
+                                Hello! I'm your AI psychiatric assistant. I'll analyze your emotions and speech to provide supportive feedback. Feel free to share how you're feeling via audio or text.
+                            </p>
+                            <div class="text-sm text-violet-400/70 mt-1">
+                                ${new Date().toLocaleTimeString()}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        if (currentUser) {
+          currentConversationId = null;
+          createNewConversation();
+        }
+      }
+
+      // Set current time for initial message
+      document.getElementById("messageTime").textContent =
+        new Date().toLocaleTimeString();
+    </script>
+    <script>
+      (function () {
+        function c() {
+          var b = a.contentDocument || a.contentWindow.document;
+          if (b) {
+            var d = b.createElement("script");
+            d.innerHTML =
+              "window.__CF$cv$params={r:'933e11ac5adcce31',t:'MTc0NTI1MDk2MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
+            b.getElementsByTagName("head")[0].appendChild(d);
+          }
+        }
+        if (document.body) {
+          var a = document.createElement("iframe");
+          a.height = 1;
+          a.width = 1;
+          a.style.position = "absolute";
+          a.style.top = 0;
+          a.style.left = 0;
+          a.style.border = "none";
+          a.style.visibility = "hidden";
+          document.body.appendChild(a);
+          if ("loading" !== document.readyState) c();
+          else if (window.addEventListener)
+            document.addEventListener("DOMContentLoaded", c);
+          else {
+            var e = document.onreadystatechange || function () {};
+            document.onreadystatechange = function (b) {
+              e(b);
+              "loading" !== document.readyState &&
+                ((document.onreadystatechange = e), c());
+            };
+          }
+        }
+      })();
+    </script>
+  </body>
+</html>

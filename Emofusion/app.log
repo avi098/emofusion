@@ -1,0 +1,130 @@
+2025-01-10 16:18:26,759 - __main__ - ERROR - Error loading models: `tf.data.Dataset` only supports Python-style iteration in eager mode or within tf.function.
+2025-01-10 16:18:35,648 - __main__ - ERROR - Error in upload: stat: path should be string, bytes, os.PathLike or integer, not NoneType
+Traceback (most recent call last):
+  File "C:\Users\avinash kumar\OneDrive\Desktop\code1\app2.py", line 217, in _handle_upload
+    if not os.path.exists(audio_path):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen genericpath>", line 19, in exists
+TypeError: stat: path should be string, bytes, os.PathLike or integer, not NoneType
+
+2025-01-10 16:38:25,950 - __main__ - ERROR - Error loading models: `tf.data.Dataset` only supports Python-style iteration in eager mode or within tf.function.
+2025-01-10 16:38:38,387 - __main__ - ERROR - Error in speech recognition: Audio file could not be read as PCM WAV, AIFF/AIFF-C, or Native FLAC; check if file is corrupted or in another format
+2025-01-10 16:46:17,895 - __main__ - ERROR - Error in emotion prediction: cannot reshape array of size 153 into shape (1,40,1)
+2025-01-10 16:46:35,409 - __main__ - ERROR - Error in emotion prediction: cannot reshape array of size 153 into shape (1,40,1)
+2025-01-10 16:47:20,390 - __main__ - ERROR - Error in emotion prediction: cannot reshape array of size 153 into shape (1,40,1)
+2025-01-10 16:47:32,310 - __main__ - ERROR - Error in emotion prediction: cannot reshape array of size 153 into shape (1,40,1)
+2025-01-10 17:00:42,042 - __main__ - ERROR - Error in emotion prediction: cannot reshape array of size 153 into shape (1,40,1)
+2025-01-10 17:01:32,833 - __main__ - ERROR - Error in emotion prediction: cannot reshape array of size 153 into shape (1,40,1)
+2025-01-10 17:01:35,039 - __main__ - ERROR - Error in emotion prediction: cannot reshape array of size 153 into shape (1,40,1)
+2025-01-10 17:01:47,778 - __main__ - ERROR - Error in emotion prediction: cannot reshape array of size 153 into shape (1,40,1)
+2025-01-10 21:26:56,862 - h5py._conv - DEBUG - Creating converter from 3 to 5
+2025-01-10 21:26:56,965 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-01-10 21:26:56,971 - __main__ - INFO - Starting Flask application...
+2025-01-10 21:26:56,979 - werkzeug - WARNING -  * Debugger is active!
+2025-01-10 21:26:56,982 - werkzeug - INFO -  * Debugger PIN: 130-729-177
+2025-01-10 21:27:12,209 - h5py._conv - DEBUG - Creating converter from 3 to 5
+2025-01-10 21:27:12,322 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-01-10 21:27:12,331 - __main__ - INFO - Starting Flask application...
+2025-01-10 21:27:12,350 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-01-10 21:27:12,350 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-01-10 21:27:12,359 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-01-10 21:27:15,982 - h5py._conv - DEBUG - Creating converter from 3 to 5
+2025-01-10 21:27:16,073 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-01-10 21:27:16,080 - __main__ - INFO - Starting Flask application...
+2025-01-10 21:27:16,091 - werkzeug - WARNING -  * Debugger is active!
+2025-01-10 21:27:16,094 - werkzeug - INFO -  * Debugger PIN: 130-729-177
+2025-01-10 21:27:16,115 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 21:27:16] "GET / HTTP/1.1" 200 -
+2025-01-10 21:27:29,267 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 21:27:29] "GET /video_feed HTTP/1.1" 200 -
+2025-01-10 21:27:45,687 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 21:27:45] "POST /upload HTTP/1.1" 200 -
+2025-01-10 21:27:54,369 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 21:27:54] "POST /upload HTTP/1.1" 200 -
+2025-01-10 22:31:59,386 - h5py._conv - DEBUG - Creating converter from 3 to 5
+2025-01-10 22:31:59,706 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-01-10 22:31:59,706 - __main__ - INFO - Starting Flask application...
+2025-01-10 22:31:59,761 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-01-10 22:31:59,761 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-01-10 22:31:59,779 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-01-10 22:32:05,183 - h5py._conv - DEBUG - Creating converter from 3 to 5
+2025-01-10 22:32:05,317 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-01-10 22:32:05,325 - __main__ - INFO - Starting Flask application...
+2025-01-10 22:32:05,336 - werkzeug - WARNING -  * Debugger is active!
+2025-01-10 22:32:05,343 - werkzeug - INFO -  * Debugger PIN: 130-729-177
+2025-01-10 22:33:07,188 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 22:33:07] "GET / HTTP/1.1" 200 -
+2025-01-10 22:33:27,806 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 22:33:27] "GET /video_feed HTTP/1.1" 200 -
+2025-01-10 22:33:28,278 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 22:33:28] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-01-10 22:35:25,873 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 22:35:25] "POST /upload HTTP/1.1" 200 -
+2025-01-10 22:35:52,344 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 22:35:52] "GET / HTTP/1.1" 200 -
+2025-01-10 22:35:52,783 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 22:35:52] "GET /video_feed HTTP/1.1" 200 -
+2025-01-10 22:35:53,597 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 22:35:53] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-01-10 22:42:45,708 - h5py._conv - DEBUG - Creating converter from 3 to 5
+2025-01-10 22:42:46,011 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-01-10 22:42:46,011 - __main__ - INFO - Starting Flask application...
+2025-01-10 22:42:46,063 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-01-10 22:42:46,063 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-01-10 22:42:46,090 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-01-10 22:42:52,717 - h5py._conv - DEBUG - Creating converter from 3 to 5
+2025-01-10 22:42:52,882 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-01-10 22:42:52,900 - __main__ - INFO - Starting Flask application...
+2025-01-10 22:42:52,916 - werkzeug - WARNING -  * Debugger is active!
+2025-01-10 22:42:52,925 - werkzeug - INFO -  * Debugger PIN: 130-729-177
+2025-01-10 22:42:52,963 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 22:42:52] "GET / HTTP/1.1" 200 -
+2025-01-10 22:43:14,866 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 22:43:14] "GET /video_feed HTTP/1.1" 200 -
+2025-01-10 22:43:15,022 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 22:43:15] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-01-10 22:43:33,633 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 22:43:33] "POST /upload HTTP/1.1" 200 -
+2025-01-10 23:44:10,710 - h5py._conv - DEBUG - Creating converter from 3 to 5
+2025-01-10 23:44:11,019 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-01-10 23:44:11,029 - __main__ - INFO - Starting Flask application...
+2025-01-10 23:44:11,070 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-01-10 23:44:11,070 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-01-10 23:44:11,089 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-01-10 23:44:18,336 - h5py._conv - DEBUG - Creating converter from 3 to 5
+2025-01-10 23:44:18,532 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-01-10 23:44:18,544 - __main__ - INFO - Starting Flask application...
+2025-01-10 23:44:18,565 - werkzeug - WARNING -  * Debugger is active!
+2025-01-10 23:44:18,574 - werkzeug - INFO -  * Debugger PIN: 130-729-177
+2025-01-10 23:44:18,622 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 23:44:18] "GET / HTTP/1.1" 200 -
+2025-01-10 23:44:39,849 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 23:44:39] "GET /video_feed HTTP/1.1" 200 -
+2025-01-10 23:44:39,872 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 23:44:39] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-01-10 23:45:49,259 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 23:45:49] "POST /upload HTTP/1.1" 200 -
+2025-01-10 23:46:03,452 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 23:46:03] "POST /upload HTTP/1.1" 200 -
+2025-01-10 23:46:13,301 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 23:46:13] "POST /upload HTTP/1.1" 200 -
+2025-01-10 23:46:51,958 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 23:46:51] "GET / HTTP/1.1" 200 -
+2025-01-10 23:46:51,996 - werkzeug - INFO - 127.0.0.1 - - [10/Jan/2025 23:46:51] "GET /video_feed HTTP/1.1" 200 -
+2025-01-11 00:59:41,932 - h5py._conv - DEBUG - Creating converter from 3 to 5
+2025-01-11 00:59:42,140 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-01-11 00:59:42,147 - __main__ - INFO - Starting Flask application...
+2025-01-11 00:59:42,177 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-01-11 00:59:42,177 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-01-11 00:59:42,188 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-01-11 00:59:46,361 - h5py._conv - DEBUG - Creating converter from 3 to 5
+2025-01-11 00:59:46,494 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-01-11 00:59:46,500 - __main__ - INFO - Starting Flask application...
+2025-01-11 00:59:46,510 - werkzeug - WARNING -  * Debugger is active!
+2025-01-11 00:59:46,514 - werkzeug - INFO -  * Debugger PIN: 130-729-177
+2025-01-11 00:59:46,718 - werkzeug - INFO - 127.0.0.1 - - [11/Jan/2025 00:59:46] "GET / HTTP/1.1" 200 -
+2025-01-11 01:00:00,533 - werkzeug - INFO - 127.0.0.1 - - [11/Jan/2025 01:00:00] "GET /video_feed HTTP/1.1" 200 -
+2025-01-11 01:00:00,577 - werkzeug - INFO - 127.0.0.1 - - [11/Jan/2025 01:00:00] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-01-11 01:01:09,764 - werkzeug - INFO - 127.0.0.1 - - [11/Jan/2025 01:01:09] "GET /stop_camera HTTP/1.1" 200 -
+2025-01-13 19:36:03,917 - h5py._conv - DEBUG - Creating converter from 3 to 5
+2025-01-13 19:36:04,239 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-01-13 19:36:04,259 - __main__ - INFO - Starting Flask application...
+2025-01-13 19:36:04,314 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-01-13 19:36:04,314 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-01-13 19:36:04,338 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-01-13 19:36:11,115 - h5py._conv - DEBUG - Creating converter from 3 to 5
+2025-01-13 19:36:11,297 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-01-13 19:36:11,306 - __main__ - INFO - Starting Flask application...
+2025-01-13 19:36:11,322 - werkzeug - WARNING -  * Debugger is active!
+2025-01-13 19:36:11,330 - werkzeug - INFO -  * Debugger PIN: 130-729-177
+2025-01-13 19:36:18,073 - werkzeug - INFO - 127.0.0.1 - - [13/Jan/2025 19:36:18] "GET / HTTP/1.1" 200 -
+2025-01-13 19:36:38,227 - werkzeug - INFO - 127.0.0.1 - - [13/Jan/2025 19:36:38] "GET /video_feed HTTP/1.1" 200 -
+2025-01-13 19:36:38,300 - werkzeug - INFO - 127.0.0.1 - - [13/Jan/2025 19:36:38] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-01-13 19:37:16,635 - werkzeug - INFO - 127.0.0.1 - - [13/Jan/2025 19:37:16] "[35m[1mPOST /upload HTTP/1.1[0m" 500 -
+2025-01-13 19:37:22,234 - werkzeug - INFO - 127.0.0.1 - - [13/Jan/2025 19:37:22] "[35m[1mPOST /upload HTTP/1.1[0m" 500 -
+2025-01-13 19:37:31,655 - werkzeug - INFO - 127.0.0.1 - - [13/Jan/2025 19:37:31] "[35m[1mPOST /upload HTTP/1.1[0m" 500 -
+2025-01-13 19:37:38,675 - werkzeug - INFO - 127.0.0.1 - - [13/Jan/2025 19:37:38] "POST /upload HTTP/1.1" 200 -
