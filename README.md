@@ -1,4 +1,4 @@
-# Speech and Facial Emotion Detection
+# Emofusion
 
 This project performs **real-time emotion detection** using **facial expressions** and **speech signals**. It leverages deep learning models trained on image and audio data to classify emotions such as happy, sad, angry, etc. It includes a user interface to interact with these models and displays detected emotions visually and/or audibly.
 
