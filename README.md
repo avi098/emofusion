@@ -18,7 +18,7 @@ This project performs **real-time emotion detection** using **facial expressions
 
 ### 1. Clone or Download
 
-Download the repository and extract the speech and facial emotion detection folder.
+Download the repository and extract the Emofusion folder.
 
 ### 2. Environment Setup
 
