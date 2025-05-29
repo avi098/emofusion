@@ -83,9 +83,3 @@ This will launch both facial and speech emotion detection modules.
 ├── app.log                 # Application log
 └── readme.txt              # Original notes
 ```
-
----
-
-## 📄 License
-
-This project is for academic/research purposes. Please refer to individual file headers and model licenses for more details.
